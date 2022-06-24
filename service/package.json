@@ -1,0 +1,24 @@
+{
+  "name": "bcp",
+  "description": "海通证券园区管理系统报修管理",
+  "author": "海通证券园区管理系统报修管理团队",
+  "private": true,
+  "scripts": {
+    "service": "./node_modules/.bin/nodemon ./config/run",
+    "app-prod": "cross-env NODE_ENV=production ./node_modules/.bin/nodemon ./config/run"
+  },
+  "dependencies": {
+    "koa": "^2.2.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^7.1.1",
+    "runkoa": "^1.5.9",
+    "moment": "^2.19.4"
+  },
+  "devDependencies": {
+    "koa": "^2.2.0",
+    "koa-router": "^7.1.1",
+    "mongoose": "^5.12.3",
+    "nodemon": "^1.11.0",
+    "runkoa": "^1.5.9"
+  }
+}

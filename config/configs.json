@@ -1,0 +1,47 @@
+{
+    "##": "端口配置",
+    "port": {
+        "api": 6000,
+        "service": 6001
+    },
+    "dns": {
+        "api": "http://meetingbook.gtja.net",
+        "service": "http://localhost:6001"
+    },
+    "##": "mongodb配置",
+    "mongodb": {
+        "dbNameMap": {
+            "meeting": "MEETINGDB_HTZQ",
+            "repair": "HTREPAIRDB",
+            "reservation": "HTRESERVATION",
+            "pass": "ht"
+        },
+	    "url":"mongodb://admin:123456@192.168.21.135:27017/ht",
+        "authSource": "admin"
+    },
+    "##": "会议ioc配置",
+    "meeting": {
+        "region_id": {
+            "nanwaitan": "622174a74c8bff7a4f61c9d3",
+            "zhangjiang": "622174834c8bff7a4f61c9ba",
+            "guangdonglu": "622174ce4c8bff7a4f61c9ec"
+        }
+    },
+    "##": "通行ioc配置",
+    "pass": {
+        "region_id": {
+            "nanwaitan": "6241154546a025574395f911",
+            "zhangjiang": "6241159046a025574395f913",
+            "guangdonglu": "6241157e46a025574395f912"
+        }
+    },
+    "signCheck": {
+        "enable": true,
+        "secret": "haitongIOC",
+        "consumeSecret": "6C175BBD750F28950837B45B38A2D7D1"
+    },
+    "##": "消费配置",
+    "consume":{
+        "data_serv_url": "http://mkb2test41.mankebao.cn"
+    }
+}
