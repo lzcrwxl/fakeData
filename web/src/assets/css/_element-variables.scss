@@ -1,0 +1,58 @@
+/*
+Write your variables here. All available variables can be
+found in element-ui/packages/theme-chalk/src/common/var.scss.
+For example, to overwrite the theme color:
+*/ 
+
+// element 表格的样式修改
+// 斑马纹
+$--color-table-striped:  #F1F8FF; 
+// 表头
+$--color-table-header: #f1f8ff; 
+
+/* 系统主题色 */
+$--color-primary: #3a99da;
+
+$--color-primary-light: mix(#FFFFFF, $--color-primary, 15%);
+$--color-primary-light-2: mix(#FFFFFF, $--color-primary, 20%);
+
+// 用于侧边栏菜单背景渐变色, 非会议项目建议使用黑色或白色与主色调进行调和得到渐变其实颜色
+$--color-primary-heavy: #036ECD;
+// $--color-primary-heavy: mix($--color-primary, #000, 90%);
+
+$--menu-background-color : $--color-primary;
+
+$--radio-font-color: $--color-primary;
+$--radio-icon-color: $--color-primary;
+$--pagination-hover-color: $--color-primary;
+$--pagination-button-color: $--color-primary;
+
+/* 弹窗标题渐变色*/
+%dialog-image-shared {
+    background: linear-gradient(176deg, $--color-primary-heavy, $--color-primary);
+}
+
+/* 菜单侧边栏渐变色 */
+%backgroud-image-shared {
+    background-image: linear-gradient(180deg, $--color-primary-heavy, $--color-primary);
+}
+
+/* tooltip背景色 */
+$--tooltip-fill: $--color-primary;
+
+/* tooltip 箭头颜色 */
+$--tooltip-border-color: $--color-primary;
+
+/* icon font path, required */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+/* a 标签颜色 */
+$--color-hover: mix( #FFFFFF, $--color-primary, 20%);
+$--color-active: mix(#000000, $--color-primary, 10%);
+
+// 按钮样式
+%btn-image-shared {
+    background-image: linear-gradient(270deg, $--color-primary-heavy, $--color-primary);
+}
+
+

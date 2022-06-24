@@ -1,0 +1,97 @@
+/*新增编辑页面距离面包屑距离*/
+.paddingTop {
+  padding-top: 22px;
+}
+/* 白底绿字按钮 */
+/* .button-green-font {
+    font-size:14px;
+    color:rgba(13,175,156,1);
+} */
+/* 绿边框按钮 */
+/* .button-border {
+    border-radius:2px;
+    border:1px solid rgba(13,175,156,1);
+} */
+
+.table-header-search {
+  .el-input__inner:not(.el-date-editor) {
+    width: 180px;
+  }
+  .el-date-editor {
+    width: 350px;
+  }
+  .el-input-group__prepend {
+    .el-input__inner {
+      width: 100px;
+    }
+  }
+  .el-form-item__label {
+    color: #606266;
+    margin-right: 10px;
+  }
+}
+
+.input-with-select .el-input-group__prepend {
+  background-color: #fff;
+  .el-input__inner {
+    padding-left: 10px;
+  }
+}
+
+.record-content-wrapper {
+  padding: 0;
+  display: flex;
+  box-sizing: border-box;
+  .detail-items {
+    padding: 15px;
+    background: #fff;
+    box-sizing: border-box;
+  }
+  .detail-left {
+    width: 35%;
+  }
+  .detail-right {
+    width: 65%;
+    border-left: 1rem solid #f5f5f5;
+    box-sizing: border-box;
+  }
+
+  .detail-info-big-title {
+    text-align: center;
+    position: relative;
+    font-size: 17px;
+    font-weight: 550;
+    padding: 20px;
+  }
+  .preview-image {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .line-info {
+    margin: 30px 0;
+  }
+  .deatil-info-title {
+    text-align: right;
+    padding-right: 1rem;
+    color: #606266;
+    font-weight: 400;
+  }
+  .deatil-info {
+    text-align: left;
+    font-weight: 700;
+    word-break: break-all;
+  }
+  h5 {
+    font-size: 17px;
+    font-weight: 900;
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+  }
+  .line-box {
+    margin-top: 20px;
+  }
+}

@@ -1,0 +1,38 @@
+@import './element-variables.scss';
+@import '~element-ui/packages/theme-chalk/src/index';
+
+// 修改月份选中后背景色
+.el-month-table td.current:not(.disabled) .cell {
+  color: $--color-white;
+  background-color: $--datepicker-active-color;
+}
+
+.el-input-group__prepend {
+  .el-input--suffix {
+    .el-input__inner {
+      &:focus,&:hover {
+        border-color: transparent !important;
+      }
+    }
+  }
+}
+.el-input--suffix {
+  > .el-input__inner {
+    &:focus,&:hover {
+      border-color: #dcdfe6 !important;
+    }
+  }
+}
+.el-dialog__body{
+  label{
+    color: #606266;
+  }
+}
+.show-limit-word{
+  textarea{
+    padding-bottom: 25px!important;
+  }
+  .el-input__count{
+    line-height: 20px!important;
+  }
+}

@@ -1,0 +1,151 @@
+.validate .el-form-item__label:before{
+  content: '*';
+  color: #ff4949;
+  position: absolute;
+  left: 30px;
+}
+
+.top-bar .el-dialog__footer {
+  padding: 10px 20px 20px;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.top-bar .dialog-footer{
+  width:100%;
+  height:34px;
+  padding-bottom: 20px;
+  bottom: 0;
+}
+
+.top-bar .dialog-footer button{
+    /* float:right; */
+    margin-right:16px;
+}
+.top-bar .dialog-footer button:first-child{
+    margin-right:0px;
+}
+
+/* 按钮 */
+.top-bar .el-button.light-button {
+  background-color: #fff;
+  color: #036ecd;
+  border: 1px solid #036ecd;
+}
+
+.top-bar .el-button.weight-button {
+  background-color:#036ECD;  
+  background: linear-gradient(270deg, #036ECD 0%, #3A99DA 100%)!important;
+  color: #fff;
+  border: 1px solid#036ECD;
+}
+
+.top-bar .el-button--text:focus, .top-bar .el-button--text:hover {
+  color:#036ECD;
+  border-color: transparent;
+  background-color: transparent;
+}
+
+.top-bar .el-button {
+  height: 36px;
+  width: 104px;
+  line-height: 35px;
+  background-color: #036ecd;
+  border-radius: 2px;
+  color: #fff;
+  border: 1px solid #036ecd;
+  vertical-align: middle;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 400;
+  box-shadow: unset;
+}
+
+.top-bar .el-button:hover {
+  background: linear-gradient(270deg, #3A99DA 0%, #036ECD 100%)!important;
+  border: 1px solid#036ECD;
+  color: #fff;
+  -webkit-box-shadow: 0 0 4px#036ECD;
+  box-shadow: 0 0 4px#036ECD;
+}
+
+.top-bar .el-dialog__header {
+  background: white;
+  border-bottom: 1px solid #F1F2F7;
+  text-align: left;
+  padding: 13px 28px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  height: 25px;
+  line-height: 24px;
+}
+
+.top-bar .el-dialog__headerbtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 0;
+  background: 0 0;
+  border: none;
+  outline: 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+.top-bar .el-dialog__headerbtn .el-dialog__close {
+  color: #303133 !important;
+}
+
+.top-bar .el-dialog .el-form-item__label{
+  float: none;
+  display: inline-block;
+}
+
+.top-bar .el-form-item .el-form-item__label {
+  font-size: 14px;
+  color: #687e99;
+  width: 100px;
+}
+
+.top-bar .el-input__inner{
+  height: 36px;
+  line-height: 29px;
+  padding-right: 30px;
+}
+
+.top-bar .el-dialog__title {
+  font-size: 16px;
+  color: #303133 !important;
+  text-align: left;
+}
+.top-bar .el-dialog__body {
+  padding: 30px 28px;
+}
+.top-bar .el-dialog .el-form {
+  text-align: left;
+  padding: 0 20px;
+}
+.top-bar .el-dialog .el-form .el-form-item {
+  margin-bottom: 20px;
+}
+.top-bar .el-dialog .el-form-item__label {
+  text-align: left;
+  width: 96px;
+}
+.top-bar .el-dialog .el-form .el-form-item__content {
+  width: 260px;
+  text-align: left;
+  max-width: none !important;
+  vertical-align: middle;
+}
+
+/* IOS微信、UC浏览器阻止字体大小调整 */
+body {
+  -webkit-text-size-adjust: none !important;
+}
+
+/* weui 样式修改 */
+.weui-toast{
+  width: 60%!important;
+}
+  
