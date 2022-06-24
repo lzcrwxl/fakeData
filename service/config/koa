@@ -7,7 +7,6 @@
 var service = require('../src/service');
 var debug = require('debug')('demo:server');
 var http = require('http');
-var basic_config = require('./basic.config');
 // var socket = require('../src/utils/socket');
 
 process.on('uncaughtException', err => {
@@ -22,7 +21,7 @@ process.on('unhandledRejection', err => {
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || basic_config.app_port);
+var port = normalizePort(3001);
 // 打印输出端口号
 console.log('端口【' + port + '】已启动，正在监听中...');
 /**

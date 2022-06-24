@@ -3,11 +3,10 @@ import moment from "moment";
 const router = new KoaRouter();
 const mongoose = require("mongoose");
 router.prefix = "/fakeData";
-import DB from "../DB";
 const { MongoClient } = require("mongodb");
 const url = "mongodb://admin:123456@192.168.21.135:27017";
 const client = new MongoClient(url);
-const configs = require("../../config/basic.config");
+
 // 生成随机字符串
 function randomString(e) {
   e = e || 32;

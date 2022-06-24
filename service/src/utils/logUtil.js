@@ -3,7 +3,6 @@ var log4js = require('log4js');
 
 var log_config = require('../../config/log.config');
 var stringUtil = require('../utils/stringUtil');
-var config = require('../../config/basic.config');
 const moment = require('moment');
 //加载配置文件
 log4js.configure(log_config);
