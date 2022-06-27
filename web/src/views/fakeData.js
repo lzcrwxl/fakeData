@@ -105,8 +105,8 @@ const Vehicle = () => {
       initialValues={{
         generateNum: 1,
         deleted: false,
-        mongodburl: "mongodb://admin:123456@192.168.21.135:27017",
-        dbName: "ht",
+        mongodburl: "mongodb://${user}:${password}@${IPidress}:27017",
+        dbName: "",
       }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
