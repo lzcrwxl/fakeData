@@ -4,4 +4,4 @@
 yarn.lock
 *.log
 **/dist/*
-service/build/*
+**/build/*

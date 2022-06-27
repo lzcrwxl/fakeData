@@ -33,18 +33,26 @@ const Vehicle = () => {
   const [form] = Form.useForm();
   let [keyArr, setKeyArr] = useState([]);
   let [formObj, setFormObj] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [isDisabled, setDisabled] = useState(true);
+
   const onFinish = (values) => {
     let { parseValue, ...params } = values;
+    setLoading(true);
     axios
       .post("/service/fakeData/batchInsert", { ...params, keyArr })
       .then((res) => {
         console.log("Success:", res);
         if (res.status === 200) {
-          message.success(`成功插入${res.data.n}条数据！`);
+          console.log(res.data.n);
+          message.success(`${params.collection}成功插入${res.data.n}条数据！`);
         }
       })
       .catch((err) => {
         message.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -55,10 +63,10 @@ const Vehicle = () => {
     console.log("Key:", key);
     setFormObj(allValues);
   };
-  const ParseValue = () => {
+  const ParseValue = async () => {
     let keys = [];
     let v = form.getFieldValue("parseValue");
-
+    await form.validateFields(["parseValue"]);
     v = transferValues(v);
     Object.keys(v).forEach((key) => {
       // 数字
@@ -88,6 +96,7 @@ const Vehicle = () => {
     // useEffect(() => {
     // });
     form.setFieldsValue(v);
+    setDisabled(false);
     setFormObj(v);
   };
 
@@ -105,7 +114,7 @@ const Vehicle = () => {
       initialValues={{
         generateNum: 1,
         deleted: false,
-        mongodburl: "mongodb://${user}:${password}@${IPidress}:27017",
+        mongodburl: "mongodb://{user}:{password}@{IP}:27017",
         dbName: "",
       }}
       onFinish={onFinish}
@@ -172,7 +181,7 @@ const Vehicle = () => {
         <Button type="primary" onClick={ParseValue}>
           解析
         </Button>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" disabled={isDisabled}>
           生成语句
         </Button>
       </Form.Item>
