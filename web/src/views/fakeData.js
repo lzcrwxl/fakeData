@@ -44,6 +44,9 @@ const Vehicle = () => {
         if (res.status === 200) {
           message.success(`成功插入${res.data.n}条数据！`);
         }
+      })
+      .catch((err) => {
+        message.error(err);
       });
     // let expression = `
     // db.${values.collection}.insertMany(${expArr});
@@ -64,7 +67,6 @@ const Vehicle = () => {
     let v = form.getFieldValue("parseValue");
 
     v = transferValues(v);
-    console.log("vvvvvvvvvvvv", v);
     Object.keys(v).forEach((key) => {
       // 数字
       if (typeof v[key] === "number") {
@@ -81,8 +83,13 @@ const Vehicle = () => {
         v["ValueType" + key] = "str";
       }
       v["Type" + key] = "zdz";
-      keys.push(key);
+      if (key !== "_id") {
+        keys.push(key);
+      } else {
+        delete v._id;
+      }
     });
+    console.log("vvvvvvvvvv", v);
     setKeyArr(keys);
     // 动态更新parentId的值
     // useEffect(() => {
