@@ -13,10 +13,22 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import FormItem from "./formItem";
 
-const { RangePicker } = DatePicker;
-
 const { Option } = Select;
 const { TextArea } = Input;
+
+const transferValues = (str) => {
+  str = str.replace(/NumberInt\(/g, "");
+  // 替换date
+  str = str.replace(/ISODate\("/g, '"date');
+  // 替换objectId
+  str = str.replace(/ObjectId\("/g, '"objId');
+  str = str.replace(/\)/g, "");
+  if (typeof str === "string") {
+    str = eval("(" + str + ")");
+  }
+  console.log("sssssssss", str);
+  return str;
+};
 
 const Vehicle = () => {
   const [form] = Form.useForm();
@@ -50,20 +62,31 @@ const Vehicle = () => {
   const ParseValue = () => {
     let keys = [];
     let v = form.getFieldValue("parseValue");
-    if (typeof v === "string") {
-      v = eval("(" + v + ")");
-    }
+
+    v = transferValues(v);
+    console.log("vvvvvvvvvvvv", v);
     Object.keys(v).forEach((key) => {
+      // 数字
+      if (typeof v[key] === "number") {
+        v["ValueType" + key] = "num";
+      } else if (typeof v[key] === "boolean") {
+        v["ValueType" + key] = "Bool";
+      } else if (typeof v[key] === "string" && v[key].includes("date")) {
+        v["ValueType" + key] = "date";
+        v[key] = v[key].replace(/date/g, "");
+      } else if (typeof v[key] === "string" && v[key].includes("objId")) {
+        v["ValueType" + key] = "objId";
+        v[key] = v[key].replace(/objId/g, "");
+      } else {
+        v["ValueType" + key] = "str";
+      }
+      v["Type" + key] = "zdz";
       keys.push(key);
     });
     setKeyArr(keys);
     // 动态更新parentId的值
     // useEffect(() => {
     // });
-    Object.keys(v).forEach((key) => {
-      v["Type" + key] = "zdz";
-      v["ValueType" + key] = "num";
-    });
     form.setFieldsValue(v);
     setFormObj(v);
   };
@@ -79,11 +102,40 @@ const Vehicle = () => {
       wrapperCol={{
         span: 16,
       }}
-      initialValues={{ generateNum: 1, deleted: false }}
+      initialValues={{
+        generateNum: 1,
+        deleted: false,
+        mongodburl: "mongodb://admin:123456@192.168.21.135:27017",
+        dbName: "ht",
+      }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
+      <Form.Item
+        label="mongodburl"
+        name="mongodburl"
+        rules={[
+          {
+            required: true,
+            message: "Please input mongodburl!",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="dbName"
+        name="dbName"
+        rules={[
+          {
+            required: true,
+            message: "Please input dbName!",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
       <Form.Item
         label="表名"
         name="collection"

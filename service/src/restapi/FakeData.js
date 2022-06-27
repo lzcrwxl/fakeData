@@ -4,8 +4,6 @@ const router = new KoaRouter();
 const mongoose = require("mongoose");
 router.prefix = "/fakeData";
 const { MongoClient } = require("mongodb");
-const url = "mongodb://admin:123456@192.168.21.135:27017";
-const client = new MongoClient(url);
 
 // 生成随机字符串
 function randomString(e) {
@@ -67,11 +65,11 @@ function getMoble() {
 }
 
 // 随机ObjectId
-function randomObjectId(str){
-    let arr = str.split(",")
-    let l = arr.length
-    let r = getRndInteger(0,l)
-    return mongoose.Types.ObjectId(arr[r]);
+function randomObjectId(str) {
+  let arr = str.split(",");
+  let l = arr.length;
+  let r = getRndInteger(0, l);
+  return mongoose.Types.ObjectId(arr[r]);
 }
 
 // 随机车牌号
@@ -88,7 +86,7 @@ function getPlate(total = 5) {
     sequence += dicingChar(halfList[Math.round(Math.random())]);
   }
   console.log(`${state}${city} ${sequence}`);
-  return `${state}${city} ${sequence}`
+  return `${state}${city} ${sequence}`;
 }
 
 function dicingChar(series) {
@@ -129,7 +127,7 @@ const generateData = (values, keyArr) => {
           case "cph":
             newObj[key] = getPlate();
             break;
-          case 'objId':
+          case "objId":
             newObj[key] = randomObjectId(values[key]);
           default:
             break;
@@ -159,9 +157,9 @@ function formatData(values, keyArr) {
  *
  */
 router.post("/batchInsert", async (ctx) => {
-  let { keyArr, collection, ...data } = ctx.request.body;
+  let { keyArr, collection, mongodburl, dbName, ...data } = ctx.request.body;
   let newData = formatData(data, keyArr);
-  const dbName = "ht";
+  const client = new MongoClient(mongodburl);
   try {
     await client.connect();
     console.log("Connect to database!");
