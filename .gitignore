@@ -3,3 +3,4 @@
 .vscode
 yarn.lock
 *.log
+**/dist/*
