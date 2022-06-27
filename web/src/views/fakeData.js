@@ -26,7 +26,6 @@ const transferValues = (str) => {
   if (typeof str === "string") {
     str = eval("(" + str + ")");
   }
-  console.log("sssssssss", str);
   return str;
 };
 
@@ -35,7 +34,6 @@ const Vehicle = () => {
   let [keyArr, setKeyArr] = useState([]);
   let [formObj, setFormObj] = useState({});
   const onFinish = (values) => {
-    console.log("Success:", values);
     let { parseValue, ...params } = values;
     axios
       .post("/service/fakeData/batchInsert", { ...params, keyArr })
@@ -48,10 +46,6 @@ const Vehicle = () => {
       .catch((err) => {
         message.error(err);
       });
-    // let expression = `
-    // db.${values.collection}.insertMany(${expArr});
-    // `;
-    // console.log("expression:", expression);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -59,7 +53,6 @@ const Vehicle = () => {
   };
   const onValuesChange = (key, allValues) => {
     console.log("Key:", key);
-    console.log(allValues);
     setFormObj(allValues);
   };
   const ParseValue = () => {

@@ -1,7 +1,7 @@
 {
   "name": "bcp",
-  "description": "海通证券园区管理系统报修管理",
-  "author": "海通证券园区管理系统报修管理团队",
+  "description": "fakeData react",
+  "author": "wxl",
   "private": true,
   "scripts": {
     "service": "./node_modules/.bin/nodemon ./config/run",

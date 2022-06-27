@@ -1,0 +1,47 @@
+{
+  "name": "electronFakeData",
+  "version": "1.0.0",
+  "description": "fakeData",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^19.0.4"
+  },
+  "extraResources": {
+    "from": "../service",
+    "to": "service"
+  },
+  "build": {
+    "appId": "com.test.fakeData",
+    "productName": "fakeData",
+    "mac": { 
+      "icon": "public/icon.png",
+      "target": [ "dmg", "zip" ]
+    },
+    "dmg": {
+      "window": { 
+        "x": 200,
+        "y": 200,
+        "width": 400,
+        "height": 400
+      }
+    },
+    "win": { 
+      "icon": "public/icon.png"
+    },
+    "nsis": { 
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true, 
+      "createDesktopShortcut": "always", 
+      "createStartMenuShortcut": false, 
+      "installerIcon": "", 
+      "uninstallerIcon": "" 
+    }
+  }
+}

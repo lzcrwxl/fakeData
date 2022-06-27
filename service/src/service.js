@@ -9,7 +9,7 @@ service.use(bodyParser());
 
 function loadStaticFile() {
   return async (ctx, next) => {
-    await koaStatic(path.resolve(__dirname, "../../web/build"))(ctx, next);
+    await koaStatic(path.resolve(__dirname, "../build"))(ctx, next);
   };
 }
 // 加载静态文件

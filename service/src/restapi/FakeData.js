@@ -6,7 +6,14 @@ router.prefix = "/fakeData";
 const { MongoClient } = require("mongodb");
 
 // 生成随机字符串
-function randomString(e) {
+function randomString(value) {
+  let e = value.length;
+  if (value.includes(",")) {
+    let arr = value.split(",");
+    let l = arr.length;
+    let r = getRndInteger(0, l);
+    return arr[r];
+  }
   e = e || 32;
   var t = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678",
     a = t.length,
@@ -15,8 +22,14 @@ function randomString(e) {
   return n;
 }
 // 随机数字
-function randomn(n) {
-  if (n > 21) return null;
+function randomn(value) {
+  let n = value.length;
+  if (value.includes(",")) {
+    let arr = value.split(",");
+    let l = arr.length;
+    let r = getRndInteger(0, l);
+    return parseInt(arr[r]);
+  } else if (n > 21) return null;
   return parseInt((Math.random() + 1) * Math.pow(10, n - 1));
 }
 function getRndInteger(min, max) {
@@ -110,10 +123,10 @@ const generateData = (values, keyArr) => {
         // 生成随机值
         switch (values["ValueType" + key]) {
           case "str":
-            newObj[key] = randomString(values[key].length);
+            newObj[key] = randomString(values[key]);
             break;
           case "num":
-            newObj[key] = randomn(values[key].length);
+            newObj[key] = randomn(values[key]);
             break;
           case "bool":
             newObj[key] = Math.random() >= 0.5;
