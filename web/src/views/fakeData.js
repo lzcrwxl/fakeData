@@ -7,6 +7,7 @@ import {
   InputNumber,
   DatePicker,
   message,
+  Space,
 } from "antd";
 import moment from "moment";
 import React, { useState, useEffect } from "react";
@@ -99,7 +100,25 @@ const Vehicle = () => {
     setDisabled(false);
     setFormObj(v);
   };
-
+  const getValue = async () => {
+    await form.validateFields(["mongodburl", "dbName", "collection"]);
+    let params = form.getFieldsValue(["mongodburl", "dbName", "collection"]);
+    console.log(params);
+    axios
+      .post("/service/fakeData/getOne", params)
+      .then((res) => {
+        console.log("Success:", res);
+        if (res.status === 200 && res.data) {
+          form.setFieldsValue({ parseValue: JSON.stringify(res.data) });
+        }
+      })
+      .catch((err) => {
+        message.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
   return (
     <Form
       form={form}
@@ -123,7 +142,6 @@ const Vehicle = () => {
     >
       <Form.Item
         label="mongodburl"
-        name="mongodburl"
         rules={[
           {
             required: true,
@@ -131,7 +149,10 @@ const Vehicle = () => {
           },
         ]}
       >
-        <Input />
+        <Form.Item name="mongodburl" noStyle>
+          <Input />
+        </Form.Item>
+        <span>示例：mongodb://admin:123456@192.168.21.135:27017</span>
       </Form.Item>
       <Form.Item
         label="dbName"
@@ -178,12 +199,17 @@ const Vehicle = () => {
           span: 16,
         }}
       >
-        <Button type="primary" onClick={ParseValue}>
-          解析
-        </Button>
-        <Button type="primary" htmlType="submit" disabled={isDisabled}>
-          生成语句
-        </Button>
+        <Space>
+          <Button type="primary" onClick={getValue}>
+            获取单条数据
+          </Button>
+          <Button type="primary" onClick={ParseValue}>
+            解析
+          </Button>
+          <Button type="primary" htmlType="submit" disabled={isDisabled}>
+            生成语句
+          </Button>
+        </Space>
       </Form.Item>
       {keyArr.map((key, k) => (
         <Form.Item label={key} key={key}>

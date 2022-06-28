@@ -2,6 +2,7 @@ import KoaRouter from "koa-router";
 import moment from "moment";
 const router = new KoaRouter();
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 router.prefix = "/fakeData";
 const { MongoClient } = require("mongodb");
 
@@ -78,11 +79,33 @@ function getMoble() {
 }
 
 // 随机ObjectId
-function randomObjectId(str) {
-  let arr = str.split(",");
-  let l = arr.length;
-  let r = getRndInteger(0, l);
-  return mongoose.Types.ObjectId(arr[r]);
+async function randomObjectId(str, key, db) {
+  if (str.includes(",")) {
+    let arr = str.split(",");
+    let l = arr.length;
+    let r = getRndInteger(0, l);
+    return ObjectId(arr[r]);
+  } else {
+    if (key.substr(key.length - 1, 1) !== "s") {
+      key = key + "s";
+    }
+    key = key.toLowerCase();
+    const dbCursor = await db
+      .collection(key)
+      .find({}, { _id: 1 })
+      .batchSize(100);
+    if (!(await dbCursor.count())) {
+      // TODO: 提前结束，做一些其它操作
+      return;
+    }
+    let arrData = [];
+    // 方法一：
+    for await (const data of dbCursor) {
+      arrData.push(data._id);
+    }
+    let l = getRndInteger(0, arrData.length);
+    return arrData[l];
+  }
 }
 
 // 随机车牌号
@@ -105,15 +128,16 @@ function getPlate(total = 5) {
 function dicingChar(series) {
   return series[~~(Math.random() * series.length)];
 }
-const generateData = (values, keyArr) => {
+const generateData = async (values, keyArr, db) => {
+  const datakeys = Object.keys(values);
   let newObj = {};
-  Object.keys(values).forEach((key) => {
+  let promise = datakeys.map(async (key) => {
     if (keyArr.includes(key)) {
       // 生成指定值
       if (!values["Type" + key] || values["Type" + key] === "zdz") {
         // 生成date和ObjectId
         if (values["ValueType" + key] === "objId") {
-          newObj[key] = mongoose.Types.ObjectId(values[key]);
+          newObj[key] = ObjectId(values[key]);
         } else if (values["ValueType" + key] === "date") {
           newObj[key] = new Date(values[key]);
         } else {
@@ -141,22 +165,23 @@ const generateData = (values, keyArr) => {
             newObj[key] = getPlate();
             break;
           case "objId":
-            newObj[key] = randomObjectId(values[key]);
+            newObj[key] =  await randomObjectId(values[key], key, db);
+            return newObj[key] 
           default:
             break;
         }
       }
-      // 生成随机值
     }
   });
+  await Promise.all(promise);
   return newObj;
 };
 
-function formatData(values, keyArr) {
+async function formatData(values, keyArr, db) {
   let expArr = [];
   for (let i = 0; i < values.generateNum; i++) {
     console.log(i);
-    let v = generateData(values, keyArr);
+    let v = await generateData(values, keyArr, db);
     expArr.push(v);
   }
   return expArr;
@@ -171,13 +196,12 @@ function formatData(values, keyArr) {
  */
 router.post("/batchInsert", async (ctx) => {
   let { keyArr, collection, mongodburl, dbName, ...data } = ctx.request.body;
-  let newData = formatData(data, keyArr);
   const client = new MongoClient(mongodburl);
   try {
     await client.connect();
     console.log("Connect to database!");
     const db = client.db(dbName);
-    console.log(collection);
+    let newData = await formatData(data, keyArr, db);
     const result = await db.collection(collection).insertMany(newData);
     console.log(result);
     ctx.body = result.result;
@@ -186,7 +210,30 @@ router.post("/batchInsert", async (ctx) => {
   } finally {
     // await client.close();
   }
-  //   ctx.body =
+});
+
+// 获取数据
+router.post("/getOne", async (ctx) => {
+  const { mongodburl, dbName, collection } = ctx.request.body;
+  console.log(mongodburl, dbName, collection);
+  const client = new MongoClient(mongodburl);
+  try {
+    await client.connect();
+    console.log("Connect to database!");
+    const db = client.db(dbName);
+    const result = await db.collection(collection).findOne();
+    Object.keys(result).forEach((key) => {
+      if (result[key]._bsontype) {
+        result[key] ='objId'+ ObjectId(result[key]).toString();
+      }
+      if(result[key] instanceof Date){
+        result[key] = 'date'+result[key]
+      }
+    });
+    ctx.body = result;
+  } catch (e) {
+    ctx.body = e.errmsg;
+  }
 });
 
 export default router;

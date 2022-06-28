@@ -13,35 +13,37 @@
   "devDependencies": {
     "electron": "^19.0.4"
   },
-  "extraResources": {
-    "from": "../service",
-    "to": "service"
+  "dependencies": {
+    "tree-kill": "^1.2.2"
   },
   "build": {
     "appId": "com.test.fakeData",
     "productName": "fakeData",
-    "mac": { 
+    "mac": {
       "icon": "public/icon.png",
-      "target": [ "dmg", "zip" ]
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "dmg": {
-      "window": { 
+      "window": {
         "x": 200,
         "y": 200,
         "width": 400,
         "height": 400
       }
     },
-    "win": { 
+    "win": {
       "icon": "public/icon.png"
     },
-    "nsis": { 
+    "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true, 
-      "createDesktopShortcut": "always", 
-      "createStartMenuShortcut": false, 
-      "installerIcon": "", 
-      "uninstallerIcon": "" 
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": false,
+      "installerIcon": "",
+      "uninstallerIcon": ""
     }
   }
 }
