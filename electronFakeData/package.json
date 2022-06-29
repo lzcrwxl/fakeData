@@ -20,10 +20,16 @@
   "build": {
     "appId": "com.test.fakeData",
     "productName": "fakeData",
-    "extraResources": {
-      "from": "../service/",
-      "to": "service"
-    },
+    "extraResources": [
+      {
+        "from": "../service/",
+        "to": "service"
+      },
+      {
+        "from": "../node/",
+        "to": "node"
+      }
+    ],
     "mac": {
       "icon": "public/icon.png",
       "target": [
