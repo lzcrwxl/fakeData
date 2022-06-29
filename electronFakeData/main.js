@@ -1,6 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
-const url = require('url');
 
 let mainWindow = null;
 
@@ -85,7 +84,7 @@ function createWindow() {
   // );
   mainWindow.loadURL("http://localhost:3001"); //根据自己的端口和ip修改 //打开开发者模式，开发环境请打开方便调试，生产环境需要禁用。
 
-  // mainWindow.webContents.openDevTools(); //判断是否是开发模式
+  mainWindow.webContents.openDevTools(); //判断是否是开发模式
   // 窗口准备好之后，再显示
   // mainWindow.once("ready-to-show", (event) => {
   //   mainWindow.show();

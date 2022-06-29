@@ -4,7 +4,7 @@
   "description": "fakeData",
   "main": "main.js",
   "scripts": {
-    "start": "cross-envNODE_ENV=development electron .",
+    "start": "electron .",
     "build": "electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
