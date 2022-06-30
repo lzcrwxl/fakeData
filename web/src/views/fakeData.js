@@ -8,6 +8,7 @@ import {
   DatePicker,
   message,
   Space,
+  Tag,
 } from "antd";
 import moment from "moment";
 import React, { useState, useEffect } from "react";
@@ -133,7 +134,7 @@ const Vehicle = () => {
       initialValues={{
         generateNum: 1,
         deleted: false,
-        mongodburl: "mongodb://{user}:{password}@{IP}:27017",
+        mongodburl: "",
         dbName: "",
       }}
       onFinish={onFinish}
@@ -234,6 +235,20 @@ const Vehicle = () => {
               <Option value="tel">电话</Option>
               <Option value="cph">车牌号</Option>
             </Select>
+          </Form.Item>
+          <Form.Item shouldUpdate>
+            {() => {
+              if (k === 0) {
+                return (
+                  <>
+                    <span>
+                      <Tag color="#2db7f5">说明：</Tag>
+                    </span>
+                    <span>当选择随机数，输入框包含<b>","</b>会从指定输入框中的多个数据选择随机数，否则从字典表中选择随机数</span>
+                  </>
+                );
+              }
+            }}
           </Form.Item>
         </Form.Item>
       ))}
