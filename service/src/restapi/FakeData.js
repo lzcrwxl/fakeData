@@ -223,7 +223,7 @@ router.post("/getOne", async (ctx) => {
     const db = client.db(dbName);
     const result = await db.collection(collection).findOne();
     Object.keys(result).forEach((key) => {
-      if (result[key]._bsontype) {
+      if (result[key]&&result[key]._bsontype) {
         result[key] ='objId'+ ObjectId(result[key]).toString();
       }
       if(result[key] instanceof Date){

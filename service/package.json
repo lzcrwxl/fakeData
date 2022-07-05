@@ -4,7 +4,7 @@
   "author": "wxl",
   "private": true,
   "scripts": {
-    "service": "./node_modules/.bin/nodemon ./config/run",
+    "service": "node_modules/.bin/nodemon ./config/run",
     "app-prod": "cross-env NODE_ENV=production ./node_modules/.bin/nodemon ./config/run"
   },
   "dependencies": {

@@ -14,6 +14,7 @@ import moment from "moment";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import FormItem from "./formItem";
+import SelectItems from "./selectItems";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -40,22 +41,23 @@ const Vehicle = () => {
 
   const onFinish = (values) => {
     let { parseValue, ...params } = values;
+    console.log("===========>", params);
     setLoading(true);
-    axios
-      .post("/service/fakeData/batchInsert", { ...params, keyArr })
-      .then((res) => {
-        console.log("Success:", res);
-        if (res.status === 200) {
-          console.log(res.data.n);
-          message.success(`${params.collection}成功插入${res.data.n}条数据！`);
-        }
-      })
-      .catch((err) => {
-        message.error(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    // axios
+    //   .post("/service/fakeData/batchInsert", { ...params, keyArr })
+    //   .then((res) => {
+    //     console.log("Success:", res);
+    //     if (res.status === 200) {
+    //       console.log(res.data.n);
+    //       message.success(`${params.collection}成功插入${res.data.n}条数据！`);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     message.error(err);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -65,41 +67,56 @@ const Vehicle = () => {
     console.log("Key:", key);
     setFormObj(allValues);
   };
-  const ParseValue = async () => {
+
+  const transferObjValues = (v) => {
     let keys = [];
-    let v = form.getFieldValue("parseValue");
-    await form.validateFields(["parseValue"]);
-    v = transferValues(v);
-    Object.keys(v).forEach((key) => {
+    let nv = { ...v };
+    Object.keys(nv).forEach((key) => {
       // 数字
-      if (typeof v[key] === "number") {
-        v["ValueType" + key] = "num";
-      } else if (typeof v[key] === "boolean") {
-        v["ValueType" + key] = "Bool";
-      } else if (typeof v[key] === "string" && v[key].includes("date")) {
-        v["ValueType" + key] = "date";
-        v[key] = v[key].replace(/date/g, "");
-      } else if (typeof v[key] === "string" && v[key].includes("objId")) {
-        v["ValueType" + key] = "objId";
-        v[key] = v[key].replace(/objId/g, "");
+      if (typeof nv[key] === "number") {
+        nv["ValueType" + key] = "num";
+      } else if (typeof nv[key] === "boolean") {
+        nv["ValueType" + key] = "Bool";
+      } else if (typeof nv[key] === "string" && nv[key].includes("date")) {
+        nv["ValueType" + key] = "date";
+        nv[key] = nv[key].replace(/date/g, "");
+      } else if (typeof nv[key] === "string" && nv[key].includes("objId")) {
+        nv["ValueType" + key] = "objId";
+        nv[key] = nv[key].replace(/objId/g, "");
+      } else if (
+        Object.prototype.toString.call(nv[key]) === "[object Object]" &&
+        key !== "nv" &&
+        key !== "keys"
+      ) {
+        nv["ValueType" + key] = "obj";
+        let value = transferObjValues(nv[key]);
+        nv[key] = value.nv;
       } else {
-        v["ValueType" + key] = "str";
+        nv["ValueType" + key] = "str";
       }
-      v["Type" + key] = "zdz";
+      nv["Type" + key] = "zdz";
       if (key !== "_id") {
         keys.push(key);
       } else {
         delete v._id;
       }
     });
-    console.log("vvvvvvvvvv", v);
+    return { nv, keys };
+  };
+
+  const ParseValue = async () => {
+    let v = form.getFieldValue("parseValue");
+    await form.validateFields(["parseValue"]);
+    v = transferValues(v);
+    let { nv, keys } = transferObjValues(v);
+    console.log(nv, "nnnnnnnnnnnnnnnnn");
     setKeyArr(keys);
     // 动态更新parentId的值
     // useEffect(() => {
     // });
-    form.setFieldsValue(v);
+    form.setFieldsValue(nv);
     setDisabled(false);
-    setFormObj(v);
+    setFormObj(nv);
   };
   const getValue = async () => {
     await form.validateFields(["mongodburl", "dbName", "collection"]);
@@ -219,23 +236,7 @@ const Vehicle = () => {
             parentValueType={formObj["ValueType" + key]}
             parentKey={key}
           />
-          <Form.Item name={"Type" + key} noStyle>
-            <Select>
-              <Option value="zdz">指定值</Option>
-              <Option value="sjs">随机数</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name={"ValueType" + key} noStyle>
-            <Select>
-              <Option value="num">数字</Option>
-              <Option value="str">字符串</Option>
-              <Option value="Bool">Bool</Option>
-              <Option value="date">日期</Option>
-              <Option value="objId">ObjectId</Option>
-              <Option value="tel">电话</Option>
-              <Option value="cph">车牌号</Option>
-            </Select>
-          </Form.Item>
+          <SelectItems parentKey={key} />
           <Form.Item shouldUpdate>
             {() => {
               if (k === 0) {
@@ -244,7 +245,10 @@ const Vehicle = () => {
                     <span>
                       <Tag color="#2db7f5">说明：</Tag>
                     </span>
-                    <span>当选择随机数，输入框包含<b>","</b>会从指定输入框中的多个数据选择随机数，否则从字典表中选择随机数</span>
+                    <span>
+                      当选择随机数，输入框包含<b>","</b>
+                      会从指定输入框中的多个数据选择随机数，否则从字典表中选择随机数
+                    </span>
                   </>
                 );
               }
