@@ -66,8 +66,6 @@ const Vehicle = () => {
     console.log("Failed:", errorInfo);
   };
   const onValuesChange = (key, allValues) => {
-    console.log("Key:", key);
-    console.log("aaaaaaaaaaa", allValues);
     setFormObj(allValues);
   };
 
