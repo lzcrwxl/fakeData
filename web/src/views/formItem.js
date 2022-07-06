@@ -16,19 +16,41 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { TextArea } = Input;
 
-export default function FormItem({ parentType, parentValueType, parentKey }) {
+export default function FormItem({
+  parentType,
+  parentValueType,
+  parentKey,
+  parentValue,
+}) {
   const form = Form.useFormInstance();
-  let value = form.getFieldValue(parentKey);
+  let value = parentValue || form.getFieldValue(parentKey);
   if (parentValueType === "obj") {
-    console.log("ffffffffffff", value);
     let result = Object.keys(value).map((key) => {
-      if (!key.includes("Type") && !key.includes("Value")) {
+      if (
+        !key.includes("Type") &&
+        !key.includes("Value") &&
+        Object.prototype.toString.call(value[key]) !== "[object Object]"
+      ) {
         return (
           <Form.Item key={key} label={key}>
             <Form.Item name={[parentKey, key]} noStyle>
               <Input />
             </Form.Item>
             <SelectItems parentKey={key} parentName={parentKey} />
+          </Form.Item>
+        );
+      } else if (
+        Object.prototype.toString.call(value[key]) === "[object Object]"
+      ) {
+        console.log(value[key]);
+        return (
+          <Form.Item label={key} key={key}>
+            <FormItem
+              parentType={value["Type" + key]}
+              parentValueType={value["ValueType" + key]}
+              parentKey={key}
+              parentValue={value[key]}
+            />
           </Form.Item>
         );
       }

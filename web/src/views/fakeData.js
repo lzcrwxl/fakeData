@@ -119,8 +119,8 @@ const Vehicle = () => {
     setFormObj(nv);
   };
   const getValue = async () => {
-    await form.validateFields(["mongodburl", "dbName", "collection"]);
-    let params = form.getFieldsValue(["mongodburl", "dbName", "collection"]);
+    await form.validateFields(["mongodburl", "database", "collection"]);
+    let params = form.getFieldsValue(["mongodburl", "database", "collection"]);
     console.log(params);
     axios
       .post("/service/fakeData/getOne", params)
@@ -152,7 +152,7 @@ const Vehicle = () => {
         generateNum: 1,
         deleted: false,
         mongodburl: "",
-        dbName: "",
+        database: "",
       }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
@@ -173,19 +173,19 @@ const Vehicle = () => {
         <span>示例：mongodb://admin:123456@192.168.21.135:27017</span>
       </Form.Item>
       <Form.Item
-        label="dbName"
-        name="dbName"
+        label="database"
+        name="database"
         rules={[
           {
             required: true,
-            message: "Please input dbName!",
+            message: "Please input database!",
           },
         ]}
       >
         <Input />
       </Form.Item>
       <Form.Item
-        label="表名"
+        label="collection"
         name="collection"
         rules={[
           {
@@ -236,7 +236,10 @@ const Vehicle = () => {
             parentValueType={formObj["ValueType" + key]}
             parentKey={key}
           />
-          <SelectItems parentKey={key} />
+          <SelectItems
+            parentKey={key}
+            parentValueType={formObj["ValueType" + key]}
+          />
           <Form.Item shouldUpdate>
             {() => {
               if (k === 0) {

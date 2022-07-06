@@ -195,12 +195,12 @@ async function formatData(values, keyArr, db) {
  *
  */
 router.post("/batchInsert", async (ctx) => {
-  let { keyArr, collection, mongodburl, dbName, ...data } = ctx.request.body;
+  let { keyArr, collection, mongodburl, database, ...data } = ctx.request.body;
   const client = new MongoClient(mongodburl);
   try {
     await client.connect();
     console.log("Connect to database!");
-    const db = client.db(dbName);
+    const db = client.db(database);
     let newData = await formatData(data, keyArr, db);
     const result = await db.collection(collection).insertMany(newData);
     console.log(result);
@@ -214,13 +214,13 @@ router.post("/batchInsert", async (ctx) => {
 
 // 获取数据
 router.post("/getOne", async (ctx) => {
-  const { mongodburl, dbName, collection } = ctx.request.body;
-  console.log(mongodburl, dbName, collection);
+  const { mongodburl, database, collection } = ctx.request.body;
+  console.log(mongodburl, database, collection);
   const client = new MongoClient(mongodburl);
   try {
     await client.connect();
     console.log("Connect to database!");
-    const db = client.db(dbName);
+    const db = client.db(database);
     const result = await db.collection(collection).findOne();
     Object.keys(result).forEach((key) => {
       if (result[key]&&result[key]._bsontype) {
