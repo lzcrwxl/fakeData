@@ -39,6 +39,7 @@ export default function SelectItems(props) {
             <Option value="obj">对象</Option>
             <Option value="email">邮箱</Option>
             <Option value="sfz">身份证</Option>
+            <Option value="xm">姓名</Option>
           </Select>
         </Form.Item>
       </>

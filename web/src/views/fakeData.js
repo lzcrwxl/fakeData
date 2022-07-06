@@ -92,6 +92,14 @@ const Vehicle = () => {
         nv["ValueType" + key] = "obj";
         let value = transferObjValues(nv[key]);
         nv[key] = value.nv;
+      } else if (
+        /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(nv[key])
+      ) {
+        nv["ValueType" + key] = "email";
+      } else if (/^[1][3,4,5,7,8,9][0-9]{9}$/.test(nv[key])) {
+        nv["ValueType" + key] = "tel";
+      } else if(/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/.test(nv[key])){
+        nv["ValueType" + key] = "sfz";
       } else {
         nv["ValueType" + key] = "str";
       }
@@ -110,7 +118,6 @@ const Vehicle = () => {
     await form.validateFields(["parseValue"]);
     v = transferValues(v);
     let { nv, keys } = transferObjValues(v);
-    console.log(nv, "nnnnnnnnnnnnnnnnn");
     setKeyArr(keys);
     // 动态更新parentId的值
     // useEffect(() => {
@@ -209,7 +216,7 @@ const Vehicle = () => {
       >
         <TextArea rows={10} />
       </Form.Item>
-      <Form.Item label="生成条数" name="generateNum">
+      <Form.Item label="插入条数" name="generateNum">
         <InputNumber min={1} />
       </Form.Item>
       <Form.Item
@@ -226,7 +233,7 @@ const Vehicle = () => {
             解析
           </Button>
           <Button type="primary" htmlType="submit" disabled={isDisabled}>
-            生成语句
+            插入数据
           </Button>
         </Space>
       </Form.Item>
