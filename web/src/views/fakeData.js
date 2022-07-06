@@ -43,21 +43,23 @@ const Vehicle = () => {
     let { parseValue, ...params } = values;
     console.log("===========>", params);
     setLoading(true);
-    // axios
-    //   .post("/service/fakeData/batchInsert", { ...params, keyArr })
-    //   .then((res) => {
-    //     console.log("Success:", res);
-    //     if (res.status === 200) {
-    //       console.log(res.data.n);
-    //       message.success(`${params.collection}成功插入${res.data.n}条数据！`);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     message.error(err);
-    //   })
-    //   .finally(() => {
-    //     setLoading(false);
-    //   });
+    axios
+      .post("/service/fakeData/batchInsert", params)
+      .then((res) => {
+        console.log("Success:", res);
+        if (res.status === 200) {
+          console.log(res.data.n);
+          message.success(
+            `${params.collection || "数据库"}成功插入${res.data.n}条数据！`
+          );
+        }
+      })
+      .catch((err) => {
+        message.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -65,7 +67,7 @@ const Vehicle = () => {
   };
   const onValuesChange = (key, allValues) => {
     console.log("Key:", key);
-    console.log('aaaaaaaaaaa',allValues);
+    console.log("aaaaaaaaaaa", allValues);
     setFormObj(allValues);
   };
 

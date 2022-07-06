@@ -6,10 +6,75 @@ const ObjectId = mongoose.Types.ObjectId;
 router.prefix = "/fakeData";
 const { MongoClient } = require("mongodb");
 
+// 生成随机身份证号
+function getId_no(value) {
+  if (value && value.includes(",")) {
+    let arr = value.split(",");
+    let l = arr.length;
+    let r = getRndInteger(0, l);
+    return arr[r];
+  }
+  var coefficientArray = [
+    "7",
+    "9",
+    "10",
+    "5",
+    "8",
+    "4",
+    "2",
+    "1",
+    "6",
+    "3",
+    "7",
+    "9",
+    "10",
+    "5",
+    "8",
+    "4",
+    "2",
+  ]; // 加权因子
+  var lastNumberArray = ["1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"]; // 校验码
+  var address = "420101"; // 住址
+  var birthday = "19810101"; // 生日
+  var s =
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString();
+  var array = (address + birthday + s).split("");
+  var total = 0;
+  for (let i in array) {
+    total = total + parseInt(array[i]) * parseInt(coefficientArray[i]);
+  }
+  var lastNumber = lastNumberArray[parseInt(total % 11)];
+  var id_no_String = address + birthday + s + lastNumber;
+  return id_no_String;
+}
+
+// 生成随机email
+function getEmail(value) {
+  console.log(value);
+  let email_suffix =
+    "@gmail.com,@yahoo.com,@msn.com,@hotmail.com,@aol.com,@ask.com,@live.com,@qq.com,@0355.net,@163.com,@163.net,@263.net,@3721.net,@yeah.net,@googlemail.com,@126.com,@sina.com,@sohu.com,@yahoo.com.cn";
+  if (value && value.includes(",")) {
+    let arr = value.split(",");
+    let l = arr.length;
+    let r = getRndInteger(0, l);
+    return arr[r];
+  }
+  var chars = "abcdefghijklmnopqrstuvwxyz1234567890";
+  var string = "";
+  for (var ii = 0; ii < 15; ii++) {
+    string += chars[Math.floor(Math.random() * chars.length)];
+  }
+  let arr = email_suffix.split(",");
+  let r = getRndInteger(0, arr.length);
+  return string + arr[r];
+}
+
 // 生成随机字符串
 function randomString(value) {
   let e = value.length;
-  if (value.includes(",")) {
+  if (value && value.includes(",")) {
     let arr = value.split(",");
     let l = arr.length;
     let r = getRndInteger(0, l);
@@ -24,6 +89,9 @@ function randomString(value) {
 }
 // 随机数字
 function randomn(value) {
+  if (typeof value === "number") {
+    value = value.toString();
+  }
   let n = value.length;
   if (value.includes(",")) {
     let arr = value.split(",");
@@ -128,47 +196,62 @@ function getPlate(total = 5) {
 function dicingChar(series) {
   return series[~~(Math.random() * series.length)];
 }
-const generateData = async (values, keyArr, db) => {
-  const datakeys = Object.keys(values);
+const generateData = async (values, db) => {
   let newObj = {};
-  let promise = datakeys.map(async (key) => {
-    if (keyArr.includes(key)) {
-      // 生成指定值
-      if (!values["Type" + key] || values["Type" + key] === "zdz") {
-        // 生成date和ObjectId
-        if (values["ValueType" + key] === "objId") {
-          newObj[key] = ObjectId(values[key]);
-        } else if (values["ValueType" + key] === "date") {
-          newObj[key] = new Date(values[key]);
-        } else {
-          newObj[key] = values[key];
-        }
-      } else if (values["Type" + key] === "sjs") {
-        // 生成随机值
-        switch (values["ValueType" + key]) {
-          case "str":
-            newObj[key] = randomString(values[key]);
-            break;
-          case "num":
-            newObj[key] = randomn(values[key]);
-            break;
-          case "bool":
-            newObj[key] = Math.random() >= 0.5;
-            break;
-          case "date":
-            newObj[key] = randomDate(values[key]);
-            break;
-          case "tel":
-            newObj[key] = getMoble();
-            break;
-          case "cph":
-            newObj[key] = getPlate();
-            break;
-          case "objId":
-            newObj[key] =  await randomObjectId(values[key], key, db);
-            return newObj[key] 
-          default:
-            break;
+  let promise = Object.keys(values).map(async (key) => {
+    // 不知原始添加的值&&不包含_id
+    if (
+      key !== "_id" &&
+      !key.substring(0, 4).includes("Type") &&
+      !key.substring(0, 5).includes("Value")
+    ) {
+      // 如果值为对象就递归
+      if (Object.prototype.toString.call(values[key]) === "[object Object]") {
+        newObj[key] = await generateData(values[key], db);
+      } else {
+        // 生成指定值
+        if (!values["Type" + key] || values["Type" + key] === "zdz") {
+          // 生成date和ObjectId
+          if (values["ValueType" + key] === "objId") {
+            newObj[key] = ObjectId(values[key]);
+          } else if (values["ValueType" + key] === "date") {
+            newObj[key] = new Date(values[key]);
+          } else {
+            newObj[key] = values[key];
+          }
+        } else if (values["Type" + key] === "sjs") {
+          // 生成随机值
+          switch (values["ValueType" + key]) {
+            case "str":
+              newObj[key] = randomString(values[key]);
+              break;
+            case "num":
+              newObj[key] = randomn(values[key]);
+              break;
+            case "bool":
+              newObj[key] = Math.random() >= 0.5;
+              break;
+            case "date":
+              newObj[key] = randomDate(values[key]);
+              break;
+            case "tel":
+              newObj[key] = getMoble();
+              break;
+            case "cph":
+              newObj[key] = getPlate();
+              break;
+            case "email":
+              newObj[key] = getEmail(values[key]);
+              break;
+            case "sfz":
+              newObj[key] = getId_no(values[key]);
+              break;
+            case "objId":
+              newObj[key] = await randomObjectId(values[key], key, db);
+              return newObj[key];
+            default:
+              break;
+          }
         }
       }
     }
@@ -177,11 +260,11 @@ const generateData = async (values, keyArr, db) => {
   return newObj;
 };
 
-async function formatData(values, keyArr, db) {
+async function formatData({ generateNum, ...values }, db) {
   let expArr = [];
-  for (let i = 0; i < values.generateNum; i++) {
+  for (let i = 0; i < generateNum; i++) {
     console.log(i);
-    let v = await generateData(values, keyArr, db);
+    let v = await generateData(values, db);
     expArr.push(v);
   }
   return expArr;
@@ -195,13 +278,13 @@ async function formatData(values, keyArr, db) {
  *
  */
 router.post("/batchInsert", async (ctx) => {
-  let { keyArr, collection, mongodburl, database, ...data } = ctx.request.body;
+  let { collection, mongodburl, database, ...data } = ctx.request.body;
   const client = new MongoClient(mongodburl);
   try {
     await client.connect();
     console.log("Connect to database!");
     const db = client.db(database);
-    let newData = await formatData(data, keyArr, db);
+    let newData = await formatData(data, db);
     const result = await db.collection(collection).insertMany(newData);
     console.log(result);
     ctx.body = result.result;
@@ -223,11 +306,11 @@ router.post("/getOne", async (ctx) => {
     const db = client.db(database);
     const result = await db.collection(collection).findOne();
     Object.keys(result).forEach((key) => {
-      if (result[key]&&result[key]._bsontype) {
-        result[key] ='objId'+ ObjectId(result[key]).toString();
+      if (result[key] && result[key]._bsontype) {
+        result[key] = "objId" + ObjectId(result[key]).toString();
       }
-      if(result[key] instanceof Date){
-        result[key] = 'date'+result[key]
+      if (result[key] instanceof Date) {
+        result[key] = "date" + result[key];
       }
     });
     ctx.body = result;

@@ -37,6 +37,8 @@ export default function SelectItems(props) {
             <Option value="tel">电话</Option>
             <Option value="cph">车牌号</Option>
             <Option value="obj">对象</Option>
+            <Option value="email">邮箱</Option>
+            <Option value="sfz">身份证</Option>
           </Select>
         </Form.Item>
       </>
