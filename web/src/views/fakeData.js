@@ -168,16 +168,17 @@ const Vehicle = () => {
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-      <Form.Item
-        label="mongodburl"
-        rules={[
-          {
-            required: true,
-            message: "Please input mongodburl!",
-          },
-        ]}
-      >
-        <Form.Item name="mongodburl" noStyle>
+      <Form.Item label="mongodburl">
+        <Form.Item
+          name="mongodburl"
+          noStyle
+          rules={[
+            {
+              required: true,
+              message: "Please input mongodburl!",
+            },
+          ]}
+        >
           <Input />
         </Form.Item>
         <span>示例：mongodb://admin:123456@192.168.21.135:27017</span>
