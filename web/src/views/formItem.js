@@ -62,7 +62,7 @@ export default function FormItem({
     }
     return (
       <Form.Item name={parentKey} noStyle>
-        <RangePicker />
+        <RangePicker showTime />
       </Form.Item>
     );
   } else {
