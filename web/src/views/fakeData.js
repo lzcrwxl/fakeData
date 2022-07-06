@@ -1,11 +1,10 @@
 import {
   Button,
-  Checkbox,
   Form,
   Input,
   Select,
   InputNumber,
-  DatePicker,
+  Divider,
   message,
   Space,
   Tag,
@@ -16,7 +15,6 @@ import axios from "axios";
 import FormItem from "./formItem";
 import SelectItems from "./selectItems";
 
-const { Option } = Select;
 const { TextArea } = Input;
 
 const transferValues = (str) => {
@@ -98,7 +96,11 @@ const Vehicle = () => {
         nv["ValueType" + key] = "email";
       } else if (/^[1][3,4,5,7,8,9][0-9]{9}$/.test(nv[key])) {
         nv["ValueType" + key] = "tel";
-      } else if(/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/.test(nv[key])){
+      } else if (
+        /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/.test(
+          nv[key]
+        )
+      ) {
         nv["ValueType" + key] = "sfz";
       } else {
         nv["ValueType" + key] = "str";
@@ -236,6 +238,16 @@ const Vehicle = () => {
             插入数据
           </Button>
         </Space>
+        <Divider />
+        <div>
+          <span>
+            <Tag color="#2db7f5">说明：</Tag>
+          </span>
+          <span>
+            当选择随机数，输入框包含<b>","</b>
+            会从指定输入框中的多个数据选择随机数，否则从字典表中选择随机数
+          </span>
+        </div>
       </Form.Item>
       {keyArr.map((key, k) => (
         <Form.Item label={key} key={key}>
@@ -248,23 +260,6 @@ const Vehicle = () => {
             parentKey={[key]}
             parentValueType={formObj["ValueType" + key]}
           />
-          <Form.Item shouldUpdate>
-            {() => {
-              if (k === 0) {
-                return (
-                  <>
-                    <span>
-                      <Tag color="#2db7f5">说明：</Tag>
-                    </span>
-                    <span>
-                      当选择随机数，输入框包含<b>","</b>
-                      会从指定输入框中的多个数据选择随机数，否则从字典表中选择随机数
-                    </span>
-                  </>
-                );
-              }
-            }}
-          </Form.Item>
         </Form.Item>
       ))}
     </Form>
