@@ -13,42 +13,21 @@ const { Option } = Select;
 
 export default function SelectItems(props) {
   let key = props.parentKey;
-  let name = props.parentName;
   let parentValueType = props.parentValueType;
-  if (name && parentValueType !== "obj") {
-    return (
-      <>
-        <Form.Item name={[name, "Type" + key]} noStyle>
-          <Select>
-            <Option value="zdz">指定值</Option>
-            <Option value="sjs">随机数</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name={[name, "ValueType" + key]} noStyle>
-          <Select>
-            <Option value="num">数字</Option>
-            <Option value="str">字符串</Option>
-            <Option value="Bool">Bool</Option>
-            <Option value="date">日期</Option>
-            <Option value="objId">ObjectId</Option>
-            <Option value="tel">电话</Option>
-            <Option value="cph">车牌号</Option>
-            <Option value="obj">对象</Option>
-          </Select>
-        </Form.Item>
-      </>
-    );
-  }
+  let subType = [...key]
+  let subValueType = [...key]
+  subType[subType.length-1] = "Type" + subType[subType.length-1]
+  subValueType[subValueType.length-1] = "ValueType" + subValueType[subValueType.length-1]
   if (parentValueType !== "obj") {
     return (
       <>
-        <Form.Item name={"Type" + key} noStyle>
+        <Form.Item name={subType} noStyle>
           <Select>
             <Option value="zdz">指定值</Option>
             <Option value="sjs">随机数</Option>
           </Select>
         </Form.Item>
-        <Form.Item name={"ValueType" + key} noStyle>
+        <Form.Item name={subValueType} noStyle>
           <Select>
             <Option value="num">数字</Option>
             <Option value="str">字符串</Option>

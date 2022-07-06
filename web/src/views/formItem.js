@@ -24,31 +24,31 @@ export default function FormItem({
 }) {
   const form = Form.useFormInstance();
   let value = parentValue || form.getFieldValue(parentKey);
-  if (parentValueType === "obj") {
+  if (Object.prototype.toString.call(value) === "[object Object]") {
     let result = Object.keys(value).map((key) => {
+      let subParentKey = [parentKey, key].join(",");
       if (
-        !key.includes("Type") &&
-        !key.includes("Value") &&
+        !key.substring(0, 4).includes("Type") &&
+        !key.substring(0, 5).includes("Value") &&
         Object.prototype.toString.call(value[key]) !== "[object Object]"
       ) {
         return (
           <Form.Item key={key} label={key}>
-            <Form.Item name={[parentKey, key]} noStyle>
+            <Form.Item name={subParentKey.split(",")} noStyle>
               <Input />
             </Form.Item>
-            <SelectItems parentKey={key} parentName={parentKey} />
+            <SelectItems parentKey={subParentKey.split(",")} />
           </Form.Item>
         );
       } else if (
         Object.prototype.toString.call(value[key]) === "[object Object]"
       ) {
-        console.log(value[key]);
         return (
           <Form.Item label={key} key={key}>
             <FormItem
               parentType={value["Type" + key]}
               parentValueType={value["ValueType" + key]}
-              parentKey={key}
+              parentKey={subParentKey.split(",")}
               parentValue={value[key]}
             />
           </Form.Item>

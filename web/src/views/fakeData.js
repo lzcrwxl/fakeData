@@ -65,6 +65,7 @@ const Vehicle = () => {
   };
   const onValuesChange = (key, allValues) => {
     console.log("Key:", key);
+    console.log('aaaaaaaaaaa',allValues);
     setFormObj(allValues);
   };
 
@@ -237,7 +238,7 @@ const Vehicle = () => {
             parentKey={key}
           />
           <SelectItems
-            parentKey={key}
+            parentKey={[key]}
             parentValueType={formObj["ValueType" + key]}
           />
           <Form.Item shouldUpdate>
