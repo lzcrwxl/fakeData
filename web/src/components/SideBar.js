@@ -18,7 +18,11 @@ function getItem(label, key, icon, children, type) {
 
 const items = [
   getItem("生成假数据", "sub1", <MailOutlined />, [
-    getItem("假数据", "/", null),
+    getItem("假数据", "/fakeData", null),
+  ]),
+  getItem("测试konva", "sub2", <MailOutlined />, [
+    getItem("konvaDemo", "/konvaDemo", null),
+    getItem("h5-edit", "/h5-edit", null),
   ]),
 ];
 

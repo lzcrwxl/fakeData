@@ -31,13 +31,14 @@ function PageContainer() {
       >
         <Header
           className="site-layout-sub-header-background"
+          id="headerBar"
           style={{
             padding: 0,
           }}
         >
           <HeadTop></HeadTop>
         </Header>
-        <Content>
+        <Content id="Content">
           <Routers></Routers>
         </Content>
       </Layout>
