@@ -1,14 +1,15 @@
 import KoaRouter from 'koa-router';
-// const router = KoaRouter();
-// const routePrefix = '/conferenceCheckin';
+import FakeData from './restapi/FakeData'
+import konvaData from './restapi/konvaData'
+
 const router = new KoaRouter({
   prefix: '/service'
 })
 
 
-import FakeData from './restapi/FakeData'
 const apis = [
   FakeData,
+  konvaData
 ];
 
 apis.forEach(api => {

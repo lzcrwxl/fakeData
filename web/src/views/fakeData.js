@@ -12,8 +12,8 @@ import {
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import FormItem from "./formItem";
-import SelectItems from "./selectItems";
+import FormItem from "../components/formItem";
+import SelectItems from "../components/selectItems";
 
 const { TextArea } = Input;
 

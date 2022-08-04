@@ -1,112 +1,116 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Stage, Layer, Star, Text, Rect } from "react-konva";
-import appConfig from "../components/appConfig";
-import H5Text from "./h5Text";
-import H5Image from "./h5Image";
-const { width, height, scale } = appConfig.editor.content;
 
-const BackgroundRect = () => {
-  return (
-    <Rect width={width} height={height} fill="#fff" name="background"></Rect>
-  );
-};
-/**
- * 获取基础图层
- */
-export function getLayers(stage) {
-  if (!stage) {
-    throw "请初始化Stage";
-  }
+import KonvaEdit from "../components/KonvaEdit";
+import { Button, Radio, Select } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
+import { message, Upload } from "antd";
+const { Dragger } = Upload;
 
-  const layers = stage.getLayers();
+const { Option } = Select;
 
-  return {
-    content: layers.find((layer) => layer.name() === "content"),
-    background: layers.find((layer) => layer.name() === "background"),
-  };
-}
-
-const zoomStep = 0.1;
-const minZoom = 0.5;
-const maxZoom = 5;
-
-// function onChangeZoom(vector) {
-//     if (($zoom <= minZoom && vector < 0) || ($zoom >= maxZoom && vector > 0)) {
-//         return
-//     }
-
-//     const value = vector
-//         ? parseFloat(($zoom + vector * zoomStep).toFixed(2))
-//         : 1
-
-//     dispatch('updateZoom', value)
-// }
-
-function onUpdateZoom(stage, zoom = 1) {
-  const { content } = getLayers(stage);
-  content.scaleX((1 / scale) * zoom);
-  content.scaleY((1 / scale) * zoom);
-  resizeStage(stage);
-}
-
-function resizeStage(stage) {
-  const container = stage.container();
-  const { content } = getLayers(stage);
-
-  // 更新舞台尺寸
-  stage.width(container.offsetWidth);
-  stage.height(container.offsetHeight);
-
-  // 更新内容图层位置
-  content.x(container.offsetWidth / 2 - (width * content.scaleX()) / 2);
-  content.y(container.offsetHeight / 2 - (height * content.scaleY()) / 2);
-
-  content.draw();
-}
+const fonts = [
+  { name: "fantasy", fontFamily: "Fantasy" }, // 本地
+  { name: "sans-serif", fontFamily: "sans-serif" }, // 本地
+  {
+    name: "frutiger",
+    fontFamily: "frutiger",
+    url: "http://lib.mytac.cn/frutiger.ttf", // 远程，需要下载到本地
+  },
+  {
+    name: "Blackletter",
+    fontFamily: "Blackletter",
+    url: "http://lib.mytac.cn/Blackletter.TTF", // 远程，需要下载到本地
+  },
+];
 
 const H5Edit = () => {
-  // const [stageWidth, setStageWidth] = React.useState(window.innerWidth - 200);
-  const [stageWidth, setStageWidth] = useState(window.innerWidth - 200);
-  const [stageHeight, setStageHeight] = React.useState(
-    window.innerHeight - 100
-  );
-  const stageRef = useRef();
-  useEffect(() => {
-    let stage = stageRef.current;
-    console.log("sssssssss", stage);
-    let ctn = document.getElementById("Content");
-    console.log(ctn);
-    let w = ctn.clientWidth;
-    console.log("dddddddd", w);
-    onUpdateZoom(stage);
-  });
+  const editRef = useRef();
 
+  function downloadURI(uri, name) {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  const exportToImage = () => {
+    const uri = editRef.current.toDataURL();
+    downloadURI(uri, "stage.png");
+  };
+  const onClick = () => {
+    console.log(editRef.current);
+    editRef.current.addText();
+  };
+  const handleChange = (value) => {
+    const { fontFamily, url } = fonts.find((f) => f.fontFamily === value);
+    editRef.current.changeFont(fontFamily, url);
+  };
+  const moveBack = () => {
+    editRef.current.moveBack();
+  };
+  const moveForward = () => {
+    editRef.current.moveForward();
+  };
+  let imgUrl;
+  const props = {
+    name: "file",
+    multiple: false,
+    listType: "picture",
+    action: "http://localhost:3000/service/konva/uploadImg",
+    onChange(info) {
+      const { status } = info.file;
+
+      if (status === "done") {
+        message.success(`${info.file.name} file uploaded successfully.`);
+        imgUrl = info.fileList[0].response.url;
+      } else if (status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onPreview(){
+      if(!imgUrl) return
+      editRef.current.addImage(imgUrl);
+    }
+  };
   return (
-    <Stage
-      width={stageWidth}
-      height={stageHeight}
-      container={"Content"}
-      ref={stageRef}
-    >
-      <Layer
-        name="content"
-        x={stageWidth / 2 - width / 3}
-        y={stageHeight / 2 - height / 6}
-        scaleX={1 / scale}
-        scaleY={1 / scale}
-        clip={{
-          x: 0,
-          y: 0,
-          width: width,
-          height: height,
-        }}
-      >
-        <BackgroundRect />
-        <H5Text />
-        <H5Image />
-      </Layer>
-      <Layer name="background"></Layer>
-    </Stage>
+    <>
+      <div>
+        <Dragger {...props}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">拖到此处添加到我的图形</p>
+        </Dragger>
+        <Button type="primary" onClick={exportToImage}>
+          export
+        </Button>
+        <Button type="primary" onClick={onClick}>
+          add Text
+        </Button>
+        <Select
+          defaultValue="Fantasy"
+          style={{
+            width: 120,
+          }}
+          onChange={handleChange}
+        >
+          {fonts.map((f) => (
+            <Option value={f.fontFamily} key={f.name}>
+              {f.name}
+            </Option>
+          ))}
+        </Select>
+        <Button type="primary" onClick={moveBack}>
+          回退
+        </Button>
+        <Button type="primary" onClick={moveForward}>
+          前进
+        </Button>
+      </div>
+      <br />
+      <KonvaEdit editRef={editRef} />
+    </>
   );
 };
 
