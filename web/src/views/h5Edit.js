@@ -52,7 +52,18 @@ const H5Edit = () => {
   const moveForward = () => {
     editRef.current.moveForward();
   };
-  let imgUrl;
+  const moveUp = () => {
+    editRef.current.moveUp();
+  };
+  const moveDown = () => {
+    editRef.current.moveDown();
+  };
+  const zoomIn = () => {
+    editRef.current.zoomIn();
+  };
+  const zoomOut = () => {
+    editRef.current.zoomOut();
+  };
   const props = {
     name: "file",
     multiple: false,
@@ -63,15 +74,13 @@ const H5Edit = () => {
 
       if (status === "done") {
         message.success(`${info.file.name} file uploaded successfully.`);
-        imgUrl = info.fileList[0].response.url;
       } else if (status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onPreview(){
-      if(!imgUrl) return
-      editRef.current.addImage(imgUrl);
-    }
+    onPreview(file) {
+      editRef.current.addImage(file.response.url);
+    },
   };
   return (
     <>
@@ -106,6 +115,18 @@ const H5Edit = () => {
         </Button>
         <Button type="primary" onClick={moveForward}>
           前进
+        </Button>
+        <Button type="primary" onClick={moveUp}>
+          图层上移
+        </Button>
+        <Button type="primary" onClick={moveDown}>
+          图层下移
+        </Button>
+        <Button type="primary" onClick={zoomIn}>
+          放大
+        </Button>
+        <Button type="primary" onClick={zoomOut}>
+          缩小
         </Button>
       </div>
       <br />

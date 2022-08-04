@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import { Stage, Layer, Star, Text, Rect, Group } from "react-konva";
+import { Stage, Layer, Star, Text, Rect, Group, } from "react-konva";
 import withTransform from "./withTransform";
 import MyImage from "./KonvaImg";
 import MyText from "./KonvaText";
@@ -20,6 +20,9 @@ const queue = new circularQueue(10);
 let KonvaEdit = ({ editRef }) => {
   const stageRef = useRef();
   const [infos, setInfo] = useState([]);
+  const [steps, setSteps] = useState([]);
+  const [stageScale, setStageScale] = useState(1);
+
   const baseInfo = {
     id: infos.length + 1,
     scaleX: 1,
@@ -70,6 +73,12 @@ let KonvaEdit = ({ editRef }) => {
       queue.enqueue(img);
       setInfo([...infos, img]);
     },
+    zoomIn: () => {
+      canvasScale(1.2)
+    },
+    zoomOut: () => {
+      canvasScale(0.8)
+    },
   }));
   const [showTransformer, setShowTransformer] = useState(true);
   const [selectedId, setSelected] = useState(1);
@@ -109,6 +118,43 @@ let KonvaEdit = ({ editRef }) => {
         });
     }
   };
+  // i正数往上移动，负数往下移动
+  const moveLayer = (i) => {
+    let current = queue.getCurrent();
+    const currentLayerIndex = current.findIndex((c) => c.id === selectedId);
+    let isChanged = false;
+    if (currentLayerIndex >= 0) {
+      const tmp = current[currentLayerIndex];
+
+      if (i > 0) {
+        if (currentLayerIndex < current.length - 1) {
+          // 界限
+          current[currentLayerIndex] = current[currentLayerIndex + 1];
+          current[currentLayerIndex + 1] = tmp;
+          isChanged = true;
+        }
+      } else if (i < 0) {
+        if (currentLayerIndex > 0) {
+          // 界限
+          current[currentLayerIndex] = current[currentLayerIndex - 1];
+          current[currentLayerIndex - 1] = tmp;
+          isChanged = true;
+        }
+      }
+    }
+    if (isChanged) {
+      queue.enqueue(current); // 本地数据更改
+      // setSteps(queue.getCurrent()); // 绑定state
+    }
+  };
+  const canvasScale = (ratio) => {
+    // ratio属于[0.25,2]
+    // 获取画布中心的位置
+    if (ratio <= 2 && ratio >= 0.25) {
+      setStageScale(ratio);
+    }
+  };
+
   useEffect(() => {
     if (
       selectedItemChange &&
@@ -128,7 +174,12 @@ let KonvaEdit = ({ editRef }) => {
   }, [selectedItemChange]); // 更改选中元素的属性
 
   return (
-    <Stage width={1200} height={1000} ref={stageRef}>
+    <Stage
+      width={1200}
+      height={1000}
+      ref={stageRef}
+      style={{ backgroundColor: "#fff", transform: `scale(${stageScale})` }}
+    >
       {infos.map((i, idx) => (
         <Layer key={i.id}>
           {i.text && (
