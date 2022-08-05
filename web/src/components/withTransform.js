@@ -44,7 +44,6 @@ const withTransform = (Component) => {
     }, [isSelected, showTransformer, trRef]);
 
     useEffect(() => {
-      console.log('dddddddddd')
       if (isSelected && trRef) {
         trRef.current.nodes([eleRef.current]);
         trRef.current.getLayer().batchDraw();

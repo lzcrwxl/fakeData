@@ -43,12 +43,13 @@ class circularQueue {
     this.list[this.tail] = item;
     this.current = this.tail;
     this.tail = (this.tail + 1) % this.length;
-    console.log(this.tail)
-    console.log(this.list)
   }
 
-  // 不涉及
-  dequeue() {}
+  // 出队
+  dequeue(item) {
+    console.log(item.id)
+    console.log(this.list)
+  }
 
   isEmpty = () => {
     return typeof this.list[this.front] === "undefined";

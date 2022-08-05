@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import { Stage, Layer, Star, Text, Rect, Group, } from "react-konva";
+import { Stage, Layer, Star, Text, Rect, Group } from "react-konva";
 import withTransform from "./withTransform";
 import MyImage from "./KonvaImg";
 import MyText from "./KonvaText";
@@ -16,15 +16,37 @@ const KonvaImage = withTransform(MyImage);
 const KonvaText = withTransform(MyText);
 
 const queue = new circularQueue(10);
-
+const stepCached = new circularQueue(10);
 let KonvaEdit = ({ editRef }) => {
   const stageRef = useRef();
-  const [infos, setInfo] = useState([]);
   const [steps, setSteps] = useState([]);
   const [stageScale, setStageScale] = useState(1);
+  const [showTransformer, setShowTransformer] = useState(true);
+  const [selectedId, setSelected] = useState(1);
+  const [selectedItemChange, setChanged] = useState();
+
+  const [infoChanged, setInfoChanged] = useState(false);
+  // 添加新元素时
+  const onAdd = (item) => {
+    const infos = stepCached.getCurrent();
+    console.log(infos);
+    let lastInfo, list;
+    const newItem = { ...item, id: 0 };
+    if (infos) lastInfo = infos[infos.length - 1]; // ！！！！
+    const newId = lastInfo ? lastInfo.id + 1 : 1000;
+    newItem.id = newId;
+    if (infos) {
+      list = [...infos, newItem];
+    } else {
+      list = [newItem];
+    }
+    stepCached.enqueue(list);
+    setInfoChanged(true); //需要处理的数据
+    setSteps(stepCached.getCurrent());
+    setSelected(newId);
+  };
 
   const baseInfo = {
-    id: infos.length + 1,
     scaleX: 1,
     scaleY: 1,
     skewY: 0,
@@ -41,9 +63,8 @@ let KonvaEdit = ({ editRef }) => {
 
   useImperativeHandle(editRef, () => ({
     addText: () => {
-      setInfo([...infos, TempText]);
-      queue.enqueue(TempText);
-      //需要处理的数据
+      onAdd(TempText);
+      
     },
     toDataURL: () => {
       return stageRef.current.toDataURL();
@@ -53,39 +74,48 @@ let KonvaEdit = ({ editRef }) => {
         addFontFaceToCss(fontFamily, url);
       } else {
         queue.enqueue({ fontFamily });
+        setInfoChanged(true);
         setChanged({ fontFamily });
       }
     },
     moveBack: () => {
-      queue.moveBack();
-      let current = queue.getCurrent();
-      setChanged(current);
+      stepCached.moveBack();
+      let currentInfos = stepCached.getCurrent();
+      setSteps(currentInfos);
+      setInfoChanged(false);
     },
     moveForward: () => {
-      queue.moveForward();
-      let current = queue.getCurrent();
-      setChanged(current);
+      stepCached.moveForward();
+      let currentInfos = stepCached.getCurrent();
+      setSteps(currentInfos);
+      setInfoChanged(false);
     },
     addImage: (url) => {
-      console.log(url);
       url = "http://localhost:3000" + url;
       let img = { ...baseInfo, url };
-      queue.enqueue(img);
-      setInfo([...infos, img]);
+      onAdd(img);
     },
     zoomIn: () => {
-      canvasScale(1.2)
+      let scale = stageRef.current.attrs.scaleX;
+      canvasScale(scale * 1.25);
     },
     zoomOut: () => {
-      canvasScale(0.8)
+      let scale = stageRef.current.attrs.scaleX;
+      canvasScale(scale * 0.8);
+    },
+    deleteItem: () => {
+      const infos = [...steps];
+      const index = infos.findIndex((i) => i.id === selectedId);
+      if (index >= 0) {
+        infos.splice(index, 1);
+        stepCached.enqueue(infos);
+        setSteps(stepCached.getCurrent());
+      }
     },
   }));
-  const [showTransformer, setShowTransformer] = useState(true);
-  const [selectedId, setSelected] = useState(1);
-  const [selectedItemChange, setChanged] = useState();
 
   const handleInfo = (v) => {
-    queue.enqueue(v);
+    console.log(selectedId);
     setChanged(v);
   };
   const addFontFaceToCss = (fontFamily, url) => {
@@ -109,6 +139,7 @@ let KonvaEdit = ({ editRef }) => {
       font
         .load()
         .then(function () {
+          setInfoChanged(true);
           setChanged({ fontFamily });
           console.log("Output Sans has loaded.");
         })
@@ -161,15 +192,18 @@ let KonvaEdit = ({ editRef }) => {
       Object.keys(selectedItemChange).length &&
       selectedId
     ) {
-      const index = infos.findIndex((i) => i.id === selectedId);
-      const selecteditem = infos[index];
+      const index = steps.findIndex((i) => i.id === selectedId);
+      const selecteditem = steps[index];
       const properties = {
         ...selecteditem,
         ...selectedItemChange,
       };
-      const newInfos = [...infos];
+      const newInfos = [...steps];
+      console.log('ttttttt');
       newInfos.splice(index, 1, properties);
-      setInfo(newInfos);
+      stepCached.enqueue(newInfos);
+      console.log(stepCached.list)
+      setSteps(newInfos);
     }
   }, [selectedItemChange]); // 更改选中元素的属性
 
@@ -178,9 +212,11 @@ let KonvaEdit = ({ editRef }) => {
       width={1200}
       height={1000}
       ref={stageRef}
-      style={{ backgroundColor: "#fff", transform: `scale(${stageScale})` }}
+      scaleX={stageScale}
+      scaleY={stageScale}
+      style={{ backgroundColor: "#fff" }}
     >
-      {infos.map((i, idx) => (
+      {steps.map((i, idx) => (
         <Layer key={i.id}>
           {i.text && (
             <KonvaText

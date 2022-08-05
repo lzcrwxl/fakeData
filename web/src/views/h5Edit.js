@@ -64,6 +64,9 @@ const H5Edit = () => {
   const zoomOut = () => {
     editRef.current.zoomOut();
   };
+  const deleteItem = () => {
+    editRef.current.deleteItem();
+  };
   const props = {
     name: "file",
     multiple: false,
@@ -115,6 +118,9 @@ const H5Edit = () => {
         </Button>
         <Button type="primary" onClick={moveForward}>
           前进
+        </Button>
+        <Button type="primary" onClick={deleteItem}>
+          删除
         </Button>
         <Button type="primary" onClick={moveUp}>
           图层上移

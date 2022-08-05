@@ -3,7 +3,6 @@ import { Image, Transformer, Text } from "react-konva";
 import useImage from "use-image";
 
 const KonvaImage = ({ url = "", handleSelected = () => {}, ...props }) => {
-  console.log(url)
   const [image, status] = useImage(url, "anonymous");
   let { myRef } = props;
   return myRef ? (
