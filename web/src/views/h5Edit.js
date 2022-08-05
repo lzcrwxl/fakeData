@@ -1,9 +1,14 @@
-import React, { useRef, useEffect, useState } from "react";
-
+import React, { useRef, useEffect, useState, useContext } from "react";
+import GlobalContext from "../components/GlobalContent";
 import KonvaEdit from "../components/KonvaEdit";
 import { Button, Radio, Select } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
+import TitleBar from "../components/TitleBar";
+import ToolBar from "../components/ToolBar";
+import ShapePanel from "../components/ShapePanel";
+import { Col, Divider, Row } from "antd";
+
 const { Dragger } = Upload;
 
 const { Option } = Select;
@@ -67,6 +72,28 @@ const H5Edit = () => {
   const deleteItem = () => {
     editRef.current.deleteItem();
   };
+  const toTop = () => {
+    editRef.current.toTop();
+  };
+  const toBottom = () => {
+    editRef.current.toBottom();
+  };
+  document.onkeydown = function (e) {
+    var keyCode = e.keyCode || e.which || e.charCode;
+    console.log(keyCode);
+    const { altKey, ctrlKey, shiftKey } = e;
+    if (ctrlKey && keyCode === 90) {
+      moveBack();
+    }
+    if (ctrlKey && keyCode === 89) {
+      moveForward();
+    }
+    if (keyCode === 46 || keyCode === 8) {
+      deleteItem();
+    }
+    e.preventDefault();
+  };
+
   const props = {
     name: "file",
     multiple: false,
@@ -86,17 +113,26 @@ const H5Edit = () => {
     },
   };
   return (
-    <>
+    <GlobalContext.Provider value={{ test: 1 }}>
       <div>
+        <TitleBar
+          exportToImage={exportToImage}
+          moveBack={moveBack}
+          moveForward={moveForward}
+          deleteItem={deleteItem}
+          toTop={toTop}
+          toBottom={toBottom}
+          moveUp={moveUp}
+          moveDown={moveDown}
+        ></TitleBar>
+        <ToolBar moveBack={moveBack} moveForward={moveForward}></ToolBar>
+
         <Dragger {...props}>
           <p className="ant-upload-drag-icon">
             <InboxOutlined />
           </p>
           <p className="ant-upload-text">拖到此处添加到我的图形</p>
         </Dragger>
-        <Button type="primary" onClick={exportToImage}>
-          export
-        </Button>
         <Button type="primary" onClick={onClick}>
           add Text
         </Button>
@@ -113,12 +149,6 @@ const H5Edit = () => {
             </Option>
           ))}
         </Select>
-        <Button type="primary" onClick={moveBack}>
-          回退
-        </Button>
-        <Button type="primary" onClick={moveForward}>
-          前进
-        </Button>
         <Button type="primary" onClick={deleteItem}>
           删除
         </Button>
@@ -136,8 +166,15 @@ const H5Edit = () => {
         </Button>
       </div>
       <br />
-      <KonvaEdit editRef={editRef} />
-    </>
+      <Row>
+        <Col flex="100px">
+          <ShapePanel></ShapePanel>
+        </Col>
+        <Col flex="auto">
+          <KonvaEdit editRef={editRef} />
+        </Col>
+      </Row>
+    </GlobalContext.Provider>
   );
 };
 

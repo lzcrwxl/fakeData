@@ -92,9 +92,27 @@ const withTransform = (Component) => {
             ref={trRef}
             boundBoxFunc={boundBoxFunc}
             onTransformEnd={(a) => {
-              const { scaleX, scaleY, rotation, skewX, skewY, x, y } =
-                a.target.attrs;
-              handleInfo({ scaleX, scaleY, rotation, skewX, skewY, x, y });
+              const { attrs, textWidth, textHeight } = a.target;
+              const { scaleX, scaleY, rotation, skewX, skewY, x, y, type } =
+              attrs;
+              console.log(type,textWidth, textHeight);
+              const otherProperty = {};
+              if (type === "text") {
+                const w = textWidth * scaleX;
+                const h = textHeight * scaleY;
+                otherProperty.w = w;
+                otherProperty.h = h;
+              }
+              handleInfo({
+                scaleX,
+                scaleY,
+                rotation,
+                skewX,
+                skewY,
+                x,
+                y,
+                ...otherProperty,
+              });
             }}
           />
         )}
