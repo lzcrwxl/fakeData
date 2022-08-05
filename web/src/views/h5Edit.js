@@ -123,10 +123,10 @@ const H5Edit = () => {
           删除
         </Button>
         <Button type="primary" onClick={moveUp}>
-          图层上移
+          上移
         </Button>
         <Button type="primary" onClick={moveDown}>
-          图层下移
+          下移
         </Button>
         <Button type="primary" onClick={zoomIn}>
           放大

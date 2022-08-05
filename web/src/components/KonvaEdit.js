@@ -15,7 +15,6 @@ import circularQueue from "../utils/circularQueue";
 const KonvaImage = withTransform(MyImage);
 const KonvaText = withTransform(MyText);
 
-const queue = new circularQueue(10);
 const stepCached = new circularQueue(10);
 let KonvaEdit = ({ editRef }) => {
   const stageRef = useRef();
@@ -25,15 +24,16 @@ let KonvaEdit = ({ editRef }) => {
   const [selectedId, setSelected] = useState(1);
   const [selectedItemChange, setChanged] = useState();
 
-  const [infoChanged, setInfoChanged] = useState(false);
   // 添加新元素时
   const onAdd = (item) => {
     const infos = stepCached.getCurrent();
-    console.log(infos);
-    let lastInfo, list;
+    let idMax, list;
     const newItem = { ...item, id: 0 };
-    if (infos) lastInfo = infos[infos.length - 1]; // ！！！！
-    const newId = lastInfo ? lastInfo.id + 1 : 1000;
+    if (infos) {
+      let idArr = infos.map((info) => info.id);
+      idMax = Math.max(...idArr);
+    }
+    const newId = idMax ? idMax + 1 : 1000;
     newItem.id = newId;
     if (infos) {
       list = [...infos, newItem];
@@ -41,7 +41,6 @@ let KonvaEdit = ({ editRef }) => {
       list = [newItem];
     }
     stepCached.enqueue(list);
-    setInfoChanged(true); //需要处理的数据
     setSteps(stepCached.getCurrent());
     setSelected(newId);
   };
@@ -64,7 +63,6 @@ let KonvaEdit = ({ editRef }) => {
   useImperativeHandle(editRef, () => ({
     addText: () => {
       onAdd(TempText);
-      
     },
     toDataURL: () => {
       return stageRef.current.toDataURL();
@@ -73,8 +71,6 @@ let KonvaEdit = ({ editRef }) => {
       if (url) {
         addFontFaceToCss(fontFamily, url);
       } else {
-        queue.enqueue({ fontFamily });
-        setInfoChanged(true);
         setChanged({ fontFamily });
       }
     },
@@ -82,13 +78,11 @@ let KonvaEdit = ({ editRef }) => {
       stepCached.moveBack();
       let currentInfos = stepCached.getCurrent();
       setSteps(currentInfos);
-      setInfoChanged(false);
     },
     moveForward: () => {
       stepCached.moveForward();
       let currentInfos = stepCached.getCurrent();
       setSteps(currentInfos);
-      setInfoChanged(false);
     },
     addImage: (url) => {
       url = "http://localhost:3000" + url;
@@ -111,6 +105,12 @@ let KonvaEdit = ({ editRef }) => {
         stepCached.enqueue(infos);
         setSteps(stepCached.getCurrent());
       }
+    },
+    moveUp: () => {
+      moveLayer(1);
+    },
+    moveDown: () => {
+      moveLayer(-1);
     },
   }));
 
@@ -139,7 +139,6 @@ let KonvaEdit = ({ editRef }) => {
       font
         .load()
         .then(function () {
-          setInfoChanged(true);
           setChanged({ fontFamily });
           console.log("Output Sans has loaded.");
         })
@@ -151,7 +150,7 @@ let KonvaEdit = ({ editRef }) => {
   };
   // i正数往上移动，负数往下移动
   const moveLayer = (i) => {
-    let current = queue.getCurrent();
+    let current = stepCached.getCurrent();
     const currentLayerIndex = current.findIndex((c) => c.id === selectedId);
     let isChanged = false;
     if (currentLayerIndex >= 0) {
@@ -174,8 +173,8 @@ let KonvaEdit = ({ editRef }) => {
       }
     }
     if (isChanged) {
-      queue.enqueue(current); // 本地数据更改
-      // setSteps(queue.getCurrent()); // 绑定state
+      stepCached.enqueue(current); // 本地数据更改
+      setSteps(stepCached.getCurrent()); // 绑定state
     }
   };
   const canvasScale = (ratio) => {
@@ -199,10 +198,8 @@ let KonvaEdit = ({ editRef }) => {
         ...selectedItemChange,
       };
       const newInfos = [...steps];
-      console.log('ttttttt');
       newInfos.splice(index, 1, properties);
       stepCached.enqueue(newInfos);
-      console.log(stepCached.list)
       setSteps(newInfos);
     }
   }, [selectedItemChange]); // 更改选中元素的属性
