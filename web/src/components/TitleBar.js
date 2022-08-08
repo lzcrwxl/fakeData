@@ -118,6 +118,10 @@ const TitleBar = ({
   toBottom,
   moveUp,
   moveDown,
+  zoomIn,
+  zoomOut,
+  addText,
+  addPic
 }) => {
   const [current, setCurrent] = useState();
 
@@ -145,6 +149,18 @@ const TitleBar = ({
     }
     if (key === "moveDown") {
       moveDown();
+    }
+    if (key === "zoomIn") {
+      zoomIn();
+    }
+    if (key === "moveDown") {
+      zoomOut();
+    }
+    if(key === "text") {
+      addText();
+    }
+    if(key === "pic") {
+      addPic()
     }
   };
 

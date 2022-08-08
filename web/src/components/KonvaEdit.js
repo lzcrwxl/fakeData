@@ -11,6 +11,8 @@ import MyImage from "./KonvaImg";
 import MyText from "./KonvaText";
 import FontFaceObserver from "fontfaceobserver";
 import circularQueue from "../utils/circularQueue";
+import { Divider } from "antd";
+import "./KnovaEdit.less";
 
 const KonvaImage = withTransform(MyImage);
 const KonvaText = withTransform(MyText);
@@ -205,38 +207,49 @@ let KonvaEdit = ({ editRef }) => {
   }, [selectedItemChange]); // 更改选中元素的属性
 
   return (
-    <Stage
-      width={1200}
-      height={1000}
-      ref={stageRef}
-      scaleX={stageScale}
-      scaleY={stageScale}
-      style={{ backgroundColor: "#fff" }}
-    >
-      {steps.map((i, idx) => (
-        <Layer key={i.id}>
-          {i.text && (
-            <KonvaText
-              {...i}
-              stageRef={stageRef}
-              isSelected={i.id === selectedId}
-              setShowTransformer={setShowTransformer}
-              handleInfo={handleInfo}
-              showTransformer={showTransformer}
-              handleSelected={setSelected.bind(null, i.id)}
-            />
-          )}
-          {i.url && (
-            <KonvaImage
-              {...i}
-              isSelected={i.id === selectedId}
-              handleInfo={handleInfo}
-              handleSelected={setSelected.bind(null, i.id)}
-            />
-          )}
-        </Layer>
-      ))}
-    </Stage>
+    <div id="canvas_container">
+      <Stage
+        style={{
+          background: "#F2F2F2",
+          width: "1200px",
+          height: "1000px",
+          position: "absolute",
+          "box-shadow": " 3px 3px 6px #888",
+          "z-index": 0,
+          overflow: "visible",
+        }}
+        container="canvas_container"
+        width={1200}
+        height={1000}
+        ref={stageRef}
+        scaleX={stageScale}
+        scaleY={stageScale}
+      >
+        {steps.map((i, idx) => (
+          <Layer key={i.id}>
+            {i.text && (
+              <KonvaText
+                {...i}
+                stageRef={stageRef}
+                isSelected={i.id === selectedId}
+                setShowTransformer={setShowTransformer}
+                handleInfo={handleInfo}
+                showTransformer={showTransformer}
+                handleSelected={setSelected.bind(null, i.id)}
+              />
+            )}
+            {i.url && (
+              <KonvaImage
+                {...i}
+                isSelected={i.id === selectedId}
+                handleInfo={handleInfo}
+                handleSelected={setSelected.bind(null, i.id)}
+              />
+            )}
+          </Layer>
+        ))}
+      </Stage>
+    </div>
   );
 };
 KonvaEdit = forwardRef(KonvaEdit);

@@ -8,6 +8,7 @@ import TitleBar from "../components/TitleBar";
 import ToolBar from "../components/ToolBar";
 import ShapePanel from "../components/ShapePanel";
 import { Col, Divider, Row } from "antd";
+import "./h5Edit.less";
 
 const { Dragger } = Upload;
 
@@ -43,8 +44,7 @@ const H5Edit = () => {
     const uri = editRef.current.toDataURL();
     downloadURI(uri, "stage.png");
   };
-  const onClick = () => {
-    console.log(editRef.current);
+  const addText = () => {
     editRef.current.addText();
   };
   const handleChange = (value) => {
@@ -78,21 +78,21 @@ const H5Edit = () => {
   const toBottom = () => {
     editRef.current.toBottom();
   };
-  document.onkeydown = function (e) {
-    var keyCode = e.keyCode || e.which || e.charCode;
-    console.log(keyCode);
-    const { altKey, ctrlKey, shiftKey } = e;
-    if (ctrlKey && keyCode === 90) {
-      moveBack();
-    }
-    if (ctrlKey && keyCode === 89) {
-      moveForward();
-    }
-    if (keyCode === 46 || keyCode === 8) {
-      deleteItem();
-    }
-    e.preventDefault();
-  };
+  // document.onkeydown = function (e) {
+  //   var keyCode = e.keyCode || e.which || e.charCode;
+  //   console.log(keyCode);
+  //   const { altKey, ctrlKey, shiftKey } = e;
+  //   if (ctrlKey && keyCode === 90) {
+  //     moveBack();
+  //   }
+  //   if (ctrlKey && keyCode === 89) {
+  //     moveForward();
+  //   }
+  //   if (keyCode === 46 || keyCode === 8) {
+  //     deleteItem();
+  //   }
+  //   e.preventDefault();
+  // };
 
   const props = {
     name: "file",
@@ -114,7 +114,7 @@ const H5Edit = () => {
   };
   return (
     <GlobalContext.Provider value={{ test: 1 }}>
-      <div>
+      <Row>
         <TitleBar
           exportToImage={exportToImage}
           moveBack={moveBack}
@@ -124,18 +124,21 @@ const H5Edit = () => {
           toBottom={toBottom}
           moveUp={moveUp}
           moveDown={moveDown}
+          zoomIn={zoomIn}
+          zoomOut={zoomOut}
+          addText={addText}
         ></TitleBar>
+      </Row>
+      <Row>
         <ToolBar moveBack={moveBack} moveForward={moveForward}></ToolBar>
-
+      </Row>
+      {/* <Row>
         <Dragger {...props}>
           <p className="ant-upload-drag-icon">
             <InboxOutlined />
           </p>
           <p className="ant-upload-text">拖到此处添加到我的图形</p>
         </Dragger>
-        <Button type="primary" onClick={onClick}>
-          add Text
-        </Button>
         <Select
           defaultValue="Fantasy"
           style={{
@@ -149,30 +152,15 @@ const H5Edit = () => {
             </Option>
           ))}
         </Select>
-        <Button type="primary" onClick={deleteItem}>
-          删除
-        </Button>
-        <Button type="primary" onClick={moveUp}>
-          上移
-        </Button>
-        <Button type="primary" onClick={moveDown}>
-          下移
-        </Button>
-        <Button type="primary" onClick={zoomIn}>
-          放大
-        </Button>
-        <Button type="primary" onClick={zoomOut}>
-          缩小
-        </Button>
-      </div>
-      <br />
+      </Row> */}
       <Row>
-        <Col flex="100px">
-          <ShapePanel></ShapePanel>
-        </Col>
-        <Col flex="auto">
-          <KonvaEdit editRef={editRef} />
-        </Col>
+        <ShapePanel></ShapePanel>
+        <div id="designer_viewport">
+          <div className="layout_bar"></div>
+          <div id="designer_layout">
+            <KonvaEdit editRef={editRef} />
+          </div>
+        </div>
       </Row>
     </GlobalContext.Provider>
   );
