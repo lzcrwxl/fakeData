@@ -21,7 +21,6 @@ const items = [
     getItem("假数据", "/fakeData", null),
   ]),
   getItem("测试konva", "sub2", <MailOutlined />, [
-    getItem("konvaDemo", "/konvaDemo", null),
     getItem("h5-edit", "/h5-edit", null),
   ]),
 ];

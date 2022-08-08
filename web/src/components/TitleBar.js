@@ -121,7 +121,7 @@ const TitleBar = ({
   zoomIn,
   zoomOut,
   addText,
-  addPic
+  addImage
 }) => {
   const [current, setCurrent] = useState();
 
@@ -160,7 +160,7 @@ const TitleBar = ({
       addText();
     }
     if(key === "pic") {
-      addPic()
+      addImage()
     }
   };
 

@@ -136,7 +136,8 @@ let KonvaText = (
             setShowTransformer(true);
             handleSelected();
           }}
-          fontStyle="italic bold"
+          fontSize={20}
+          fontFamily="Microsoft YaHei"
           align="center"
           {...props}
         />

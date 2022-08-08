@@ -1,36 +1,17 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
 import GlobalContext from "../components/GlobalContent";
 import KonvaEdit from "../components/KonvaEdit";
-import { Button, Radio, Select } from "antd";
+import { ConfigProvider } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import { message, Upload } from "antd";
 import TitleBar from "../components/TitleBar";
 import ToolBar from "../components/ToolBar";
 import ShapePanel from "../components/ShapePanel";
-import { Col, Divider, Row } from "antd";
 import "./h5Edit.less";
-
-const { Dragger } = Upload;
-
-const { Option } = Select;
-
-const fonts = [
-  { name: "fantasy", fontFamily: "Fantasy" }, // 本地
-  { name: "sans-serif", fontFamily: "sans-serif" }, // 本地
-  {
-    name: "frutiger",
-    fontFamily: "frutiger",
-    url: "http://lib.mytac.cn/frutiger.ttf", // 远程，需要下载到本地
-  },
-  {
-    name: "Blackletter",
-    fontFamily: "Blackletter",
-    url: "http://lib.mytac.cn/Blackletter.TTF", // 远程，需要下载到本地
-  },
-];
 
 const H5Edit = () => {
   const editRef = useRef();
+  const titleBarRef = useRef();
+  const toolBarRef = useRef();
 
   function downloadURI(uri, name) {
     var link = document.createElement("a");
@@ -47,9 +28,8 @@ const H5Edit = () => {
   const addText = () => {
     editRef.current.addText();
   };
-  const handleChange = (value) => {
-    const { fontFamily, url } = fonts.find((f) => f.fontFamily === value);
-    editRef.current.changeFont(fontFamily, url);
+  const changeFont = (value) => {
+    editRef.current.changeFont(value);
   };
   const moveBack = () => {
     editRef.current.moveBack();
@@ -78,44 +58,35 @@ const H5Edit = () => {
   const toBottom = () => {
     editRef.current.toBottom();
   };
-  // document.onkeydown = function (e) {
-  //   var keyCode = e.keyCode || e.which || e.charCode;
-  //   console.log(keyCode);
-  //   const { altKey, ctrlKey, shiftKey } = e;
-  //   if (ctrlKey && keyCode === 90) {
-  //     moveBack();
-  //   }
-  //   if (ctrlKey && keyCode === 89) {
-  //     moveForward();
-  //   }
-  //   if (keyCode === 46 || keyCode === 8) {
-  //     deleteItem();
-  //   }
-  //   e.preventDefault();
-  // };
 
-  const props = {
-    name: "file",
-    multiple: false,
-    listType: "picture",
-    action: "http://localhost:3000/service/konva/uploadImg",
-    onChange(info) {
-      const { status } = info.file;
-
-      if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onPreview(file) {
-      editRef.current.addImage(file.response.url);
-    },
+  const addImage = (file) => {
+    editRef.current.addImage(file);
   };
+  const getAttrs = (attrs) => {
+    console.log("aaaaaaaaaaaaaaaa", attrs);
+    toolBarRef.current.getAttrs()
+  };
+
+  document.onkeydown = function (e) {
+    var keyCode = e.keyCode || e.which || e.charCode;
+    const { altKey, ctrlKey, shiftKey } = e;
+    if (ctrlKey && keyCode === 90) {
+      moveBack();
+    }
+    if (ctrlKey && keyCode === 89) {
+      moveForward();
+    }
+    if (keyCode === 46 || keyCode === 8) {
+      deleteItem();
+    }
+  };
+  const [componentSize, setComponentSize] = useState("small");
+
   return (
     <GlobalContext.Provider value={{ test: 1 }}>
-      <Row>
+      <ConfigProvider componentSize={componentSize}>
         <TitleBar
+          titleBarRef={titleBarRef}
           exportToImage={exportToImage}
           moveBack={moveBack}
           moveForward={moveForward}
@@ -128,40 +99,15 @@ const H5Edit = () => {
           zoomOut={zoomOut}
           addText={addText}
         ></TitleBar>
-      </Row>
-      <Row>
-        <ToolBar moveBack={moveBack} moveForward={moveForward}></ToolBar>
-      </Row>
-      {/* <Row>
-        <Dragger {...props}>
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">拖到此处添加到我的图形</p>
-        </Dragger>
-        <Select
-          defaultValue="Fantasy"
-          style={{
-            width: 120,
-          }}
-          onChange={handleChange}
-        >
-          {fonts.map((f) => (
-            <Option value={f.fontFamily} key={f.name}>
-              {f.name}
-            </Option>
-          ))}
-        </Select>
-      </Row> */}
-      <Row>
-        <ShapePanel></ShapePanel>
-        <div id="designer_viewport">
-          <div className="layout_bar"></div>
-          <div id="designer_layout">
-            <KonvaEdit editRef={editRef} />
-          </div>
-        </div>
-      </Row>
+        <ToolBar
+          toolBarRef={toolBarRef}
+          moveBack={moveBack}
+          moveForward={moveForward}
+          changeFont={changeFont}
+        ></ToolBar>
+        <ShapePanel addImage={addImage}></ShapePanel>
+        <KonvaEdit editRef={editRef} getAttrs={getAttrs} />
+      </ConfigProvider>
     </GlobalContext.Provider>
   );
 };

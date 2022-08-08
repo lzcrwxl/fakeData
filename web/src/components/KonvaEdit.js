@@ -11,15 +11,16 @@ import MyImage from "./KonvaImg";
 import MyText from "./KonvaText";
 import FontFaceObserver from "fontfaceobserver";
 import circularQueue from "../utils/circularQueue";
-import { Divider } from "antd";
+import Konva from "konva";
 import "./KnovaEdit.less";
 
 const KonvaImage = withTransform(MyImage);
 const KonvaText = withTransform(MyText);
 
 const stepCached = new circularQueue(10);
-let KonvaEdit = ({ editRef }) => {
+let KonvaEdit = ({ editRef ,getAttrs}) => {
   const stageRef = useRef();
+  const laysRef = useRef();
   const [steps, setSteps] = useState([]);
   const [stageScale, setStageScale] = useState(1);
   const [showTransformer, setShowTransformer] = useState(true);
@@ -35,7 +36,7 @@ let KonvaEdit = ({ editRef }) => {
       let idArr = infos.map((info) => info.id);
       idMax = Math.max(...idArr);
     }
-    const newId = idMax ? idMax + 1 : 1000;
+    const newId = idMax ? idMax + 1 : 1;
     newItem.id = newId;
     if (infos) {
       list = [...infos, newItem];
@@ -52,7 +53,6 @@ let KonvaEdit = ({ editRef }) => {
     scaleY: 1,
     skewY: 0,
     skewX: 0,
-    fontSize: 50,
     rotation: 0,
     x: 100,
     y: 100,
@@ -69,11 +69,11 @@ let KonvaEdit = ({ editRef }) => {
     toDataURL: () => {
       return stageRef.current.toDataURL();
     },
-    changeFont: (fontFamily, url) => {
+    changeFont: ({ fontFamily, url, ...props }) => {
       if (url) {
         addFontFaceToCss(fontFamily, url);
       } else {
-        setChanged({ fontFamily });
+        setChanged({ fontFamily, ...props });
       }
     },
     moveBack: () => {
@@ -86,7 +86,8 @@ let KonvaEdit = ({ editRef }) => {
       let currentInfos = stepCached.getCurrent();
       setSteps(currentInfos);
     },
-    addImage: (url) => {
+    addImage: (file) => {
+      let { url } = file.response;
       url = "http://localhost:3000" + url;
       let img = { ...baseInfo, url };
       onAdd(img);
@@ -177,6 +178,7 @@ let KonvaEdit = ({ editRef }) => {
     if (isChanged) {
       stepCached.enqueue(current); // 本地数据更改
       setSteps(stepCached.getCurrent()); // 绑定state
+      stageRef.current.draw();
     }
   };
   const canvasScale = (ratio) => {
@@ -205,50 +207,79 @@ let KonvaEdit = ({ editRef }) => {
       setSteps(newInfos);
     }
   }, [selectedItemChange]); // 更改选中元素的属性
+  useEffect(() => {
+    let stage = stageRef.current;
+    if (!stage) return;
+    stage.on("click tap", function (e) {
+      // if click on empty area - remove all transformers
+      let trs = stage.find("Transformer");
+      if (e.target === stage) {
+        console.log(e.target);
+        if (trs.length > 0) {
+          trs.map((tr) => {
+            tr.hide();
+          });
+        }
+        return;
+      }
+      // 监听选择事件
+      if (trs.length > 0) {
+        trs.map((tr) => {
+          tr.show();
+        });
+      }
+      let attrs = e.target.getAttrs();
+      getAttrs(attrs);
+    });
+  }, [stageRef, laysRef]);
 
   return (
-    <div id="canvas_container">
-      <Stage
-        style={{
-          background: "#F2F2F2",
-          width: "1200px",
-          height: "1000px",
-          position: "absolute",
-          "box-shadow": " 3px 3px 6px #888",
-          "z-index": 0,
-          overflow: "visible",
-        }}
-        container="canvas_container"
-        width={1200}
-        height={1000}
-        ref={stageRef}
-        scaleX={stageScale}
-        scaleY={stageScale}
-      >
-        {steps.map((i, idx) => (
-          <Layer key={i.id}>
-            {i.text && (
-              <KonvaText
-                {...i}
-                stageRef={stageRef}
-                isSelected={i.id === selectedId}
-                setShowTransformer={setShowTransformer}
-                handleInfo={handleInfo}
-                showTransformer={showTransformer}
-                handleSelected={setSelected.bind(null, i.id)}
-              />
-            )}
-            {i.url && (
-              <KonvaImage
-                {...i}
-                isSelected={i.id === selectedId}
-                handleInfo={handleInfo}
-                handleSelected={setSelected.bind(null, i.id)}
-              />
-            )}
-          </Layer>
-        ))}
-      </Stage>
+    <div id="designer_viewport">
+      <div className="layout_bar"></div>
+      <div id="designer_layout">
+        <div id="canvas_container">
+          <Stage
+            style={{
+              background: "#F2F2F2",
+              width: "1200px",
+              height: "1000px",
+              position: "relative",
+              boxShadow: " 3px 3px 6px #888",
+              zIndex: 0,
+              overflow: "visible",
+            }}
+            width={1200}
+            height={1000}
+            ref={stageRef}
+            scaleX={stageScale}
+            scaleY={stageScale}
+          >
+            {steps.map((i, idx) => (
+              <Layer key={i.id} ref={laysRef} id={"Layer" + i.id}>
+                {i.text && (
+                  <KonvaText
+                    {...i}
+                    stageRef={stageRef}
+                    isSelected={i.id === selectedId}
+                    setShowTransformer={setShowTransformer}
+                    handleInfo={handleInfo}
+                    showTransformer={showTransformer}
+                    handleSelected={setSelected.bind(null, i.id)}
+                  />
+                )}
+                {i.url && (
+                  <KonvaImage
+                    {...i}
+                    isSelected={i.id === selectedId}
+                    handleInfo={handleInfo}
+                    handleSelected={setSelected.bind(null, i.id)}
+                  />
+                )}
+              </Layer>
+            ))}
+          </Stage>
+        </div>
+      </div>
     </div>
   );
 };
