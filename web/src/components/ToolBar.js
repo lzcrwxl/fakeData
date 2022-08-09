@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import {
   UndoOutlined,
   RedoOutlined,
@@ -57,19 +63,63 @@ const tagsData = [
   },
 ];
 
-const ToolBar = ({ toolBarRef, moveBack, moveForward, changeFont }) => {
+const ToolBar = (
+  { moveBack, moveForward, changeFont, attrs, ...props },
+  ref
+) => {
+  const defaultValue = "Microsoft YaHei";
   const [keyboard, setKeyboard] = useState(true);
+  const [fontFamilyValue, setFontFamilyValue] = useState(defaultValue);
+  const [fontSizeValue, setFontSizeValue] = useState(20);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const fontKeys = ["fontFamily", "fontSize", "fontStyle", "textDecoration"];
+
+  useEffect(() => {
+    if (!attrs) return;
+    setAttributes(attrs);
+  }, [attrs]);
+  let arr = [];
+  const setAttributes = (attrs) => {
+    fontKeys.forEach((k) => {
+      if (k === "fontFamily") {
+        setFontFamilyValue(attrs[k] || defaultValue);
+      }
+      if (k === "fontSize") {
+        setFontSizeValue(attrs[k] || 20);
+      }
+      if (k === "fontStyle") {
+        if (!attrs[k]) {
+          setSelectedTags(arr);
+          return;
+        }
+        if (attrs[k].includes("bold")) {
+          arr.push("bold");
+        }
+        if (attrs[k].includes("italic")) {
+          arr.push("italic");
+        }
+      }
+      if (k === "textDecoration" &&attrs[k]) {
+        arr.push('underline')
+      }
+      setSelectedTags(arr);
+    });
+  };
   const handleChangeFontFamily = (value) => {
+    console.log(`selected ${value}`);
+    setFontFamilyValue(value);
     const { fontFamily, url } = fonts.find((f) => f.fontFamily === value);
     changeFont({ fontFamily, url });
   };
   const handleChangeFont = (type, value) => {
+    console.log(type);
+    if (type === "fontSize") {
+      setFontSizeValue(value);
+    }
     changeFont({ [type]: value });
   };
-  const [selectedTags, setSelectedTags] = useState([]);
 
   const handleChangeFontStyle = ({ key, value }, checked) => {
-    console.log(key, value);
     const nextSelectedTags = checked
       ? [...selectedTags, value]
       : selectedTags.filter((t) => t !== value);
@@ -92,12 +142,15 @@ const ToolBar = ({ toolBarRef, moveBack, moveForward, changeFont }) => {
     console.log(fObj);
     changeFont(fObj);
     setSelectedTags(nextSelectedTags);
-    const getAttrs = () => {
-      console.log("33333333333333333333333333");
-    };
   };
+
+  useImperativeHandle(ref, () => ({
+    setAttributes: (attrs) => {
+      setAttributes(attrs);
+    },
+  }));
   return (
-    <div ref={toolBarRef}>
+    <div>
       <Tooltip title="撤销">
         <Button type="text" icon={<UndoOutlined />} onClick={moveBack}></Button>
       </Tooltip>
@@ -111,8 +164,9 @@ const ToolBar = ({ toolBarRef, moveBack, moveForward, changeFont }) => {
       <Divider type="vertical" />
       <Tooltip title="字体">
         <Select
-          defaultValue="Microsoft YaHei"
+          defaultValue={defaultValue}
           onChange={handleChangeFontFamily}
+          value={fontFamilyValue}
         >
           {fonts.map((f) => (
             <Option value={f.fontFamily} key={f.name}>
@@ -127,6 +181,7 @@ const ToolBar = ({ toolBarRef, moveBack, moveForward, changeFont }) => {
           min={13}
           max={100}
           keyboard={keyboard}
+          value={fontSizeValue}
           bordered={false}
           defaultValue={20}
           formatter={(value) => `${value}px`}
@@ -150,4 +205,4 @@ const ToolBar = ({ toolBarRef, moveBack, moveForward, changeFont }) => {
   );
 };
 
-export default ToolBar;
+export default forwardRef(ToolBar);

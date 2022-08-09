@@ -12,6 +12,7 @@ import MyText from "./KonvaText";
 import FontFaceObserver from "fontfaceobserver";
 import circularQueue from "../utils/circularQueue";
 import Konva from "konva";
+import { defaultTextAttrs } from "../utils/const";
 import "./KnovaEdit.less";
 
 const KonvaImage = withTransform(MyImage);
@@ -59,11 +60,13 @@ let KonvaEdit = ({ editRef ,getAttrs}) => {
   };
   const TempText = {
     ...baseInfo,
+    ...defaultTextAttrs,
     text: "hello world",
   };
 
   useImperativeHandle(editRef, () => ({
     addText: () => {
+      getAttrs(defaultTextAttrs);
       onAdd(TempText);
     },
     toDataURL: () => {
@@ -214,12 +217,12 @@ let KonvaEdit = ({ editRef ,getAttrs}) => {
       // if click on empty area - remove all transformers
       let trs = stage.find("Transformer");
       if (e.target === stage) {
-        console.log(e.target);
         if (trs.length > 0) {
           trs.map((tr) => {
             tr.hide();
           });
         }
+        getAttrs(defaultTextAttrs);
         return;
       }
       // 监听选择事件

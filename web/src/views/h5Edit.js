@@ -12,7 +12,7 @@ const H5Edit = () => {
   const editRef = useRef();
   const titleBarRef = useRef();
   const toolBarRef = useRef();
-
+  const [curentAttrs, setAttributes] = useState({});
   function downloadURI(uri, name) {
     var link = document.createElement("a");
     link.download = name;
@@ -63,8 +63,8 @@ const H5Edit = () => {
     editRef.current.addImage(file);
   };
   const getAttrs = (attrs) => {
-    console.log("aaaaaaaaaaaaaaaa", attrs);
-    toolBarRef.current.getAttrs()
+    toolBarRef.current.setAttributes(attrs);
+    setAttributes(attrs);
   };
 
   document.onkeydown = function (e) {
@@ -100,7 +100,8 @@ const H5Edit = () => {
           addText={addText}
         ></TitleBar>
         <ToolBar
-          toolBarRef={toolBarRef}
+          attrs={curentAttrs}
+          ref={toolBarRef}
           moveBack={moveBack}
           moveForward={moveForward}
           changeFont={changeFont}
