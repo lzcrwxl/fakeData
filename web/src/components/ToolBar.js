@@ -15,27 +15,15 @@ import {
   FontColorsOutlined,
 } from "@ant-design/icons";
 import { Button, Tooltip, Divider, Select, InputNumber, Tag } from "antd";
-const { CheckableTag } = Tag;
+import { fonts } from "../utils/const";
+import { SketchPicker } from "react-color";
+import "./ToolBar.less";
 
+const { CheckableTag } = Tag;
 const { Option } = Select;
-const fonts = [
-  {
-    name: "微软雅黑",
-    fontFamily: "Microsoft YaHei",
-  },
-  { name: "fantasy", fontFamily: "Fantasy" }, // 本地
-  { name: "sans-serif", fontFamily: "sans-serif" }, // 本地
-  {
-    name: "frutiger",
-    fontFamily: "frutiger",
-    url: "http://lib.mytac.cn/frutiger.ttf", // 远程，需要下载到本地
-  },
-  {
-    name: "Blackletter",
-    fontFamily: "Blackletter",
-    url: "http://lib.mytac.cn/Blackletter.TTF", // 远程，需要下载到本地
-  },
-];
+const decimalToHex = (alpha) =>
+  alpha === 0 ? "00" : Math.round(255 * alpha).toString(16);
+
 const tagsData = [
   {
     name: "粗体",
@@ -58,7 +46,7 @@ const tagsData = [
   {
     name: "文本颜色",
     key: "fill",
-    value: "black",
+    value: "fill",
     icon: <FontColorsOutlined />,
   },
 ];
@@ -72,7 +60,9 @@ const ToolBar = (
   const [fontFamilyValue, setFontFamilyValue] = useState(defaultValue);
   const [fontSizeValue, setFontSizeValue] = useState(20);
   const [selectedTags, setSelectedTags] = useState([]);
-  const fontKeys = ["fontFamily", "fontSize", "fontStyle", "textDecoration"];
+  const fontKeys = ["fontFamily", "fontSize", "fontStyle", "textDecoration",'fill'];
+  const defaultColor = "#000000ff"
+  const [acolor, setColor] = useState(defaultColor);
 
   useEffect(() => {
     if (!attrs) return;
@@ -99,8 +89,14 @@ const ToolBar = (
           arr.push("italic");
         }
       }
-      if (k === "textDecoration" &&attrs[k]) {
-        arr.push('underline')
+      if (k === "textDecoration" && attrs[k]) {
+        arr.push("underline");
+      }
+      if(k==='fill'){
+        if(attrs[k]) {
+          arr.push('fill');
+        }
+        setColor(attrs[k]||defaultColor)
       }
       setSelectedTags(arr);
     });
@@ -112,7 +108,6 @@ const ToolBar = (
     changeFont({ fontFamily, url });
   };
   const handleChangeFont = (type, value) => {
-    console.log(type);
     if (type === "fontSize") {
       setFontSizeValue(value);
     }
@@ -149,6 +144,18 @@ const ToolBar = (
       setAttributes(attrs);
     },
   }));
+
+  // const hideListener = (e) => {
+  //   if (ref && visible) {
+  //     const ele = e.target;
+  //     const validArea = ref.current;
+  //     if (!validArea.contains(ele)) {
+  //       setVisible(false);
+  //       changeColor({ color: acolor }); // 已经发送为啥木有生效？
+  //     }
+  //   }
+  // };
+
   return (
     <div>
       <Tooltip title="撤销">
@@ -191,15 +198,29 @@ const ToolBar = (
       </Tooltip>
       <Divider type="vertical" />
       {tagsData.map((tag) => (
-        <Tooltip title={tag.name} key={tag.name}>
-          <CheckableTag
-            key={tag.key}
-            checked={selectedTags.some((i) => i === tag.value)}
-            onChange={(checked) => handleChangeFontStyle(tag, checked)}
-          >
-            {tag.icon}
-          </CheckableTag>
-        </Tooltip>
+        <span className="checkable-tag" key={tag.name}>
+          <Tooltip title={tag.name} key={tag.name}>
+            <CheckableTag
+              key={tag.key}
+              checked={selectedTags.some((i) => i === tag.value)}
+              onChange={(checked) => handleChangeFontStyle(tag, checked)}
+            >
+              {tag.icon}
+            </CheckableTag>
+            {selectedTags.includes("fill") && tag.key === "fill" && (
+              <div id="color_picker" className="color_picker">
+                <SketchPicker
+                  color={acolor}
+                  onChange={(c) => {
+                    const hexCode = `${c.hex}${decimalToHex(c.rgb.a)}`;
+                    setColor(hexCode);
+                    changeFont({ fill: hexCode });
+                  }}
+                />
+              </div>
+            )}
+          </Tooltip>
+        </span>
       ))}
     </div>
   );
