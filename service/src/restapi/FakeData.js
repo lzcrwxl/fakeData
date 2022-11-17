@@ -362,7 +362,7 @@ const generateData = async (values, db) => {
           } else if (values["ValueType" + key] === "date") {
             newObj[key] = new Date(values[key]);
           } else {
-            newObj[key] = values[key];
+            newObj[key] = getZdz(values[key]) 
           }
         } else if (values["Type" + key] === "sjs") {
           // 生成随机值
@@ -449,7 +449,6 @@ router.post("/batchInsert", async (ctx) => {
 // 获取数据
 router.post("/getOne", async (ctx) => {
   const { mongodburl, database, collection } = ctx.request.body;
-  console.log(mongodburl, database, collection);
   const client = new MongoClient(mongodburl);
   try {
     await client.connect();

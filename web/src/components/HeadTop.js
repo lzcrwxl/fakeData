@@ -3,7 +3,6 @@ import { Breadcrumb } from "antd";
 import { HashRouter, Link, Route, Routes, useLocation } from "react-router-dom";
 const breadcrumbNameMap = {
   "/fakeData": "生成假数据",
-  "/konvaDemo": "konvaDemo",
   "/h5-edit": "h5-edit",
 };
 const HeadTop = () => {

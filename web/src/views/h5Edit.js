@@ -1,112 +1,115 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Stage, Layer, Star, Text, Rect } from "react-konva";
-import appConfig from "../components/appConfig";
-import H5Text from "./h5Text";
-import H5Image from "./h5Image";
-const { width, height, scale } = appConfig.editor.content;
-
-const BackgroundRect = () => {
-  return (
-    <Rect width={width} height={height} fill="#fff" name="background"></Rect>
-  );
-};
-/**
- * 获取基础图层
- */
-export function getLayers(stage) {
-  if (!stage) {
-    throw "请初始化Stage";
-  }
-
-  const layers = stage.getLayers();
-
-  return {
-    content: layers.find((layer) => layer.name() === "content"),
-    background: layers.find((layer) => layer.name() === "background"),
-  };
-}
-
-const zoomStep = 0.1;
-const minZoom = 0.5;
-const maxZoom = 5;
-
-// function onChangeZoom(vector) {
-//     if (($zoom <= minZoom && vector < 0) || ($zoom >= maxZoom && vector > 0)) {
-//         return
-//     }
-
-//     const value = vector
-//         ? parseFloat(($zoom + vector * zoomStep).toFixed(2))
-//         : 1
-
-//     dispatch('updateZoom', value)
-// }
-
-function onUpdateZoom(stage, zoom = 1) {
-  const { content } = getLayers(stage);
-  content.scaleX((1 / scale) * zoom);
-  content.scaleY((1 / scale) * zoom);
-  resizeStage(stage);
-}
-
-function resizeStage(stage) {
-  const container = stage.container();
-  const { content } = getLayers(stage);
-
-  // 更新舞台尺寸
-  stage.width(container.offsetWidth);
-  stage.height(container.offsetHeight);
-
-  // 更新内容图层位置
-  content.x(container.offsetWidth / 2 - (width * content.scaleX()) / 2);
-  content.y(container.offsetHeight / 2 - (height * content.scaleY()) / 2);
-
-  content.draw();
-}
+import React, { useRef, useEffect, useState, useContext } from "react";
+import GlobalContext from "../components/GlobalContent";
+import KonvaEdit from "../components/KonvaEdit";
+import { ConfigProvider } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
+import TitleBar from "../components/TitleBar";
+import ToolBar from "../components/ToolBar";
+import ShapePanel from "../components/ShapePanel";
+import "./h5Edit.less";
 
 const H5Edit = () => {
-  // const [stageWidth, setStageWidth] = React.useState(window.innerWidth - 200);
-  const [stageWidth, setStageWidth] = useState(window.innerWidth - 200);
-  const [stageHeight, setStageHeight] = React.useState(
-    window.innerHeight - 100
-  );
-  const stageRef = useRef();
-  useEffect(() => {
-    let stage = stageRef.current;
-    console.log("sssssssss", stage);
-    let ctn = document.getElementById("Content");
-    console.log(ctn);
-    let w = ctn.clientWidth;
-    console.log("dddddddd", w);
-    onUpdateZoom(stage);
-  });
+  const editRef = useRef();
+  const titleBarRef = useRef();
+  const toolBarRef = useRef();
+  const [curentAttrs, setAttributes] = useState({});
+  function downloadURI(uri, name) {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  const exportToImage = () => {
+    const uri = editRef.current.toDataURL();
+    downloadURI(uri, "stage.png");
+  };
+  const addText = () => {
+    editRef.current.addText();
+  };
+  const changeFont = (value) => {
+    editRef.current.changeFont(value);
+  };
+  const moveBack = () => {
+    editRef.current.moveBack();
+  };
+  const moveForward = () => {
+    editRef.current.moveForward();
+  };
+  const moveUp = () => {
+    editRef.current.moveUp();
+  };
+  const moveDown = () => {
+    editRef.current.moveDown();
+  };
+  const zoomIn = () => {
+    editRef.current.zoomIn();
+  };
+  const zoomOut = () => {
+    editRef.current.zoomOut();
+  };
+  const deleteItem = () => {
+    editRef.current.deleteItem();
+  };
+  const toTop = () => {
+    editRef.current.toTop();
+  };
+  const toBottom = () => {
+    editRef.current.toBottom();
+  };
+
+  const addImage = (file) => {
+    editRef.current.addImage(file);
+  };
+  const getAttrs = (attrs) => {
+    toolBarRef.current.setAttributes(attrs);
+    setAttributes(attrs);
+  };
+
+  document.onkeydown = function (e) {
+    var keyCode = e.keyCode || e.which || e.charCode;
+    const { altKey, ctrlKey, shiftKey } = e;
+    if (ctrlKey && keyCode === 90) {
+      moveBack();
+    }
+    if (ctrlKey && keyCode === 89) {
+      moveForward();
+    }
+    if (keyCode === 46 || keyCode === 8) {
+      deleteItem();
+    }
+  };
+  const [componentSize, setComponentSize] = useState("small");
 
   return (
-    <Stage
-      width={stageWidth}
-      height={stageHeight}
-      container={"Content"}
-      ref={stageRef}
-    >
-      <Layer
-        name="content"
-        x={stageWidth / 2 - width / 3}
-        y={stageHeight / 2 - height / 6}
-        scaleX={1 / scale}
-        scaleY={1 / scale}
-        clip={{
-          x: 0,
-          y: 0,
-          width: width,
-          height: height,
-        }}
-      >
-        <BackgroundRect />
-        <H5Text />
-        <H5Image />
-      </Layer>
-      <Layer name="background"></Layer>
-    </Stage>
+    <GlobalContext.Provider value={{ test: 1 }}>
+      <ConfigProvider componentSize={componentSize}>
+        <TitleBar
+          titleBarRef={titleBarRef}
+          exportToImage={exportToImage}
+          moveBack={moveBack}
+          moveForward={moveForward}
+          deleteItem={deleteItem}
+          toTop={toTop}
+          toBottom={toBottom}
+          moveUp={moveUp}
+          moveDown={moveDown}
+          zoomIn={zoomIn}
+          zoomOut={zoomOut}
+          addText={addText}
+        ></TitleBar>
+        <ToolBar
+          attrs={curentAttrs}
+          ref={toolBarRef}
+          moveBack={moveBack}
+          moveForward={moveForward}
+          changeFont={changeFont}
+        ></ToolBar>
+        <ShapePanel addImage={addImage}></ShapePanel>
+        <KonvaEdit editRef={editRef} getAttrs={getAttrs} />
+      </ConfigProvider>
+    </GlobalContext.Provider>
   );
 };
 
