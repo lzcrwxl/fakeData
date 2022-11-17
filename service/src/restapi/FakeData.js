@@ -125,6 +125,30 @@ function getRandomName() {
   return name;
 }
 
+// 生成随机ip
+const ipv4 = {
+  random: function (subnet="192.0.0.0", mask=8) {
+    // generate random address (integer)
+    // if the mask is 20, then it's an integer between
+    // 1 and 2^(32-20)
+    let randomIp = Math.floor(Math.random() * Math.pow(2, 32 - mask)) + 1;
+    console.log(this.lon2ip(this.ip2lon(subnet) | randomIp))
+    return this.lon2ip(this.ip2lon(subnet) | randomIp);
+  },
+  ip2lon: function (address) {
+    let result = 0;
+    
+    address.split('.').forEach(function(octet) {
+      result <<= 8;
+      result += parseInt(octet, 10);
+    });
+
+    return result >>> 0;
+  },
+  lon2ip: function (lon) {
+    return [lon >>> 24, lon >> 16 & 255, lon >> 8 & 255, lon & 255].join('.');
+  }
+};
 
 // 生成随机身份证号
 function getId_no(value) {
@@ -316,6 +340,7 @@ function getPlate(total = 5) {
 function dicingChar(series) {
   return series[~~(Math.random() * series.length)];
 }
+
 const generateData = async (values, db) => {
   let newObj = {};
   let promise = Object.keys(values).map(async (key) => {
@@ -368,6 +393,9 @@ const generateData = async (values, db) => {
               break;
             case 'xm':
               newObj[key] = getRandomName();
+              break;
+            case "ip":
+              newObj[key] = ipv4.random(values[key]);
               break;
             case "objId":
               newObj[key] = await randomObjectId(values[key], key, db);

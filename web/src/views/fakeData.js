@@ -12,8 +12,8 @@ import {
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import FormItem from "./formItem";
-import SelectItems from "./selectItems";
+import FormItem from "../components/formItem";
+import SelectItems from "../components/selectItems";
 
 const { TextArea } = Input;
 
@@ -66,7 +66,8 @@ const Vehicle = () => {
   const onValuesChange = (key, allValues) => {
     setFormObj(allValues);
   };
-
+  
+  var regexIP = /^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$/;  
   const transferObjValues = (v) => {
     let keys = [];
     let nv = { ...v };
@@ -82,6 +83,8 @@ const Vehicle = () => {
       } else if (typeof nv[key] === "string" && nv[key].includes("objId")) {
         nv["ValueType" + key] = "objId";
         nv[key] = nv[key].replace(/objId/g, "");
+      } else if (typeof nv[key] === "string" && regexIP.test(nv[key])) {
+        nv["ValueType" + key] = "ip";
       } else if (
         Object.prototype.toString.call(nv[key]) === "[object Object]" &&
         key !== "nv" &&
