@@ -362,7 +362,7 @@ const generateData = async (values, db) => {
           } else if (values["ValueType" + key] === "date") {
             newObj[key] = new Date(values[key]);
           } else {
-            newObj[key] = getZdz(values[key]) 
+            newObj[key] = values[key] 
           }
         } else if (values["Type" + key] === "sjs") {
           // 生成随机值
