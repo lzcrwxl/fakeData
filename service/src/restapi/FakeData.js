@@ -452,7 +452,6 @@ router.post("/batchInsert", async (ctx) => {
 // 获取数据
 router.post("/getOne", async (ctx) => {
   const { mongodburl, database, collection } = ctx.request.body;
-  console.log(mongodburl, database, collection);
   const client = new MongoClient(mongodburl);
   try {
     await client.connect();
