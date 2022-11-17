@@ -6,6 +6,7 @@ import {
   InputNumber,
   Divider,
   message,
+  notification,
   Space,
   Tag,
 } from "antd";
@@ -46,13 +47,19 @@ const Vehicle = () => {
       .then((res) => {
         console.log("Success:", res);
         if (res.status === 200) {
-          console.log(res.data.n);
-          message.success(
-            `${params.collection || "数据库"}成功插入${res.data.n}条数据！`
-          );
+          notification.success({
+            message: '插入成功',
+            description:
+            `${params.collection || "数据库"}成功插入${res.data.n}条数据！`,
+          });
         }
       })
       .catch((err) => {
+        notification.error({
+          message: '插入失败',
+          description:
+          `${err}`,
+        });
         message.error(err);
       })
       .finally(() => {
